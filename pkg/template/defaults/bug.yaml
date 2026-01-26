@@ -1,0 +1,11 @@
+type: Bug
+fields:
+  project:
+    key: "{{ .Project }}"
+  summary: "{{ .Summary }}"
+  description: "{{ .Description }}"
+  priority:
+    name: "{{ .Priority | default \"High\" }}"
+  labels: "{{ .Labels | toJson }}"
+  assignee:
+    accountId: "{{ .Assignee | default nil }}"

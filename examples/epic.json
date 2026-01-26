@@ -1,0 +1,7 @@
+{
+  "Project": "PROJ",
+  "Summary": "Q1 2024 Platform Improvements",
+  "Description": "Epic to track all platform improvements planned for Q1 2024.\n\n## Goals\n- Improve API performance by 50%\n- Add user authentication\n- Implement rate limiting\n- Add comprehensive monitoring\n\n## Success Metrics\n- API response time < 200ms (p95)\n- 100% of endpoints protected\n- Zero security incidents\n- 99.9% uptime",
+  "EpicName": "Q1 Platform",
+  "Labels": ["platform", "Q1-2024"]
+}

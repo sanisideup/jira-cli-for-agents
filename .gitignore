@@ -1,0 +1,43 @@
+# Agents
+.claude/
+CLAUDE.md
+AGENTS.md
+
+# New feature development
+.new-features/
+
+# Binaries for programs and plugins
+jira-cli
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool
+*.out
+
+# Go workspace file
+go.work
+
+# Config files
+config.yaml
+.jira-cli/
+
+# Build directory
+dist/
+bin/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db

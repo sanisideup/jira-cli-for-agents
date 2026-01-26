@@ -1,0 +1,13 @@
+type: Story
+fields:
+  project:
+    key: "{{ .Project }}"
+  summary: "{{ .Summary }}"
+  description: "{{ .Description }}"
+  assignee:
+    accountId: "{{ .Assignee | default nil }}"
+  priority:
+    name: "{{ .Priority | default \"Medium\" }}"
+  labels: "{{ .Labels | toJson }}"
+  story_points: "{{ .StoryPoints | default nil }}"  # Uses alias, will be resolved via field mappings
+  epic_link: "{{ .EpicKey }}"  # Uses alias, will be resolved via field mappings

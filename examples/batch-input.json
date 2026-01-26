@@ -1,0 +1,55 @@
+[
+  {
+    "template": "epic",
+    "data": {
+      "Project": "PROJ",
+      "Summary": "Q1 2024 Platform Improvements",
+      "Description": "Epic to track all platform improvements planned for Q1 2024.",
+      "EpicName": "Q1 Platform",
+      "Labels": ["platform", "Q1-2024"]
+    }
+  },
+  {
+    "template": "story",
+    "data": {
+      "Project": "PROJ",
+      "Summary": "Implement user authentication",
+      "Description": "Add JWT-based authentication to the API endpoints.",
+      "StoryPoints": 5,
+      "Labels": ["auth", "security"],
+      "EpicKey": "PROJ-1"
+    }
+  },
+  {
+    "template": "story",
+    "data": {
+      "Project": "PROJ",
+      "Summary": "Add rate limiting to API",
+      "Description": "Implement rate limiting to prevent API abuse.",
+      "StoryPoints": 3,
+      "Labels": ["api", "security"],
+      "EpicKey": "PROJ-1"
+    }
+  },
+  {
+    "template": "story",
+    "data": {
+      "Project": "PROJ",
+      "Summary": "Add monitoring dashboards",
+      "Description": "Create monitoring dashboards for key metrics.",
+      "StoryPoints": 5,
+      "Labels": ["monitoring", "observability"],
+      "EpicKey": "PROJ-1"
+    }
+  },
+  {
+    "template": "bug",
+    "data": {
+      "Project": "PROJ",
+      "Summary": "API returns 500 on invalid input",
+      "Description": "When sending malformed JSON, API returns 500 instead of 400.",
+      "Priority": "High",
+      "Labels": ["bug", "api"]
+    }
+  }
+]

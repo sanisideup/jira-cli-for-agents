@@ -1,0 +1,15 @@
+type: Task
+fields:
+  project:
+    key: "{{ .Project }}"
+  summary: "[Charter] {{ .Summary }}"
+  description: |
+    ## Problem Statement
+    {{ .Problem }}
+
+    ## Goals
+    {{ .Goals }}
+
+    ## Success Criteria
+    {{ .SuccessCriteria }}
+  labels: "{{ .Labels | toJson }}"

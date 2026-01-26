@@ -1,0 +1,8 @@
+type: Epic
+fields:
+  project:
+    key: "{{ .Project }}"
+  summary: "{{ .Summary }}"
+  description: "{{ .Description }}"
+  labels: "{{ .Labels | toJson }}"
+  customfield_10011: "{{ .EpicName }}"  # Epic Name field (common ID, may need mapping)
