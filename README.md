@@ -16,6 +16,39 @@ A fast, scriptable CLI for Jira Cloud designed for AI-assisted workflows and dev
 - **Attachment Support**: Upload, download, list, and delete file attachments
 - **Allowlist control**: Specify read only or write access of commands via CLI
 
+## Why jcfa?
+
+There are several excellent Jira CLIs. Here's how jcfa differs:
+
+| Feature | jcfa | [jira-cli](https://github.com/ankitpokhrel/jira-cli) | [Atlassian CLI](https://developer.atlassian.com/cloud/acli/) |
+|---------|------|----------|---------------|
+| **Primary audience** | AI agents, automation | Developers (interactive) | Admins, organizations |
+| **Output format** | JSON-first (machine-readable) | Human-readable TUI | Human-readable |
+| **Batch operations** | Create 50+ issues from JSON | Single operations | Bulk admin ops |
+| **Agent sandboxing** | `JIRA_READONLY=1` | - | - |
+| **Pre-flight validation** | `--dry-run` schema check | - | - |
+| **Field aliases** | `story_points` not `customfield_10016` | - | - |
+| **Structured exit codes** | 0=ok, 1=auth, 2=validation, 3=API | Standard | Standard |
+| **Interface style** | Automation-first | Human-first (TUI) | Admin-first |
+
+### When to use each tool
+
+**Choose jcfa when:**
+- Building AI agent workflows (Claude, GPT, Copilot)
+- Creating issues programmatically from meeting notes or specs
+- Running in CI/CD pipelines or automation scripts
+- Sandboxing AI agents with read-only restrictions
+
+**Choose jira-cli when:**
+- You want an interactive terminal UI with vim keybindings
+- Browsing and managing issues manually
+- GitHub CLI-inspired personal productivity workflow
+
+**Choose Atlassian CLI when:**
+- Managing Jira/Confluence administration at scale
+- Cross-product Atlassian automation
+- Enterprise organization management
+
 ## Installation
 
 ### Prerequisites
