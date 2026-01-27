@@ -10,7 +10,7 @@ import (
 	"path/filepath"
 	"runtime"
 
-	"github.com/sanisideup/jira-cli/pkg/config"
+	"github.com/sanisideup/jira-cli-for-agents/pkg/config"
 )
 
 // Backend represents the type of secret storage backend
@@ -25,7 +25,7 @@ const (
 	BackendFile Backend = "file"
 
 	// Service name for keyring
-	ServiceName = "jira-cli"
+	ServiceName = "jcfa"
 	// EncryptedFileName is the name of the encrypted credentials file
 	EncryptedFileName = "credentials.enc"
 )

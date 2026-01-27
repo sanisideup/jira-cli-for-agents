@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/sanisideup/jira-cli/pkg/jira"
-	"github.com/sanisideup/jira-cli/pkg/models"
+	"github.com/sanisideup/jira-cli-for-agents/pkg/jira"
+	"github.com/sanisideup/jira-cli-for-agents/pkg/models"
 	"github.com/spf13/cobra"
 )
 
@@ -30,10 +30,10 @@ Subcommands:
   delete   - Delete an attachment
 
 Examples:
-  jira-cli attachment list PROJ-123
-  jira-cli attachment upload PROJ-123 file.pdf
-  jira-cli attachment download PROJ-123 file.pdf
-  jira-cli attachment delete 10001 --confirm`,
+  jcfa attachment list PROJ-123
+  jcfa attachment upload PROJ-123 file.pdf
+  jcfa attachment download PROJ-123 file.pdf
+  jcfa attachment delete 10001 --confirm`,
 	Run: func(cmd *cobra.Command, args []string) {
 		cmd.Help()
 	},
@@ -46,8 +46,8 @@ var attachmentListCmd = &cobra.Command{
 	Long: `List all file attachments on an issue with metadata.
 
 Examples:
-  jira-cli attachment list PROJ-123
-  jira-cli attachment list PROJ-123 --json`,
+  jcfa attachment list PROJ-123
+  jcfa attachment list PROJ-123 --json`,
 	Args: cobra.ExactArgs(1),
 	RunE: runAttachmentList,
 }
@@ -62,9 +62,9 @@ Files larger than 1MB will show a progress bar during upload.
 Use --no-progress to disable the progress bar.
 
 Examples:
-  jira-cli attachment upload PROJ-123 design.pdf
-  jira-cli attachment upload PROJ-123 screenshot1.png screenshot2.png
-  jira-cli attachment upload PROJ-123 large-file.zip --no-progress`,
+  jcfa attachment upload PROJ-123 design.pdf
+  jcfa attachment upload PROJ-123 screenshot1.png screenshot2.png
+  jcfa attachment upload PROJ-123 large-file.zip --no-progress`,
 	Args: cobra.MinimumNArgs(2),
 	RunE: runAttachmentUpload,
 }
@@ -79,10 +79,10 @@ If a filename is provided, the command will search for a matching attachment.
 Use --output to specify the destination path (file or directory).
 
 Examples:
-  jira-cli attachment download PROJ-123 10001
-  jira-cli attachment download PROJ-123 design.pdf
-  jira-cli attachment download PROJ-123 design.pdf --output ./downloads/
-  jira-cli attachment download PROJ-123 10001 --output custom-name.pdf`,
+  jcfa attachment download PROJ-123 10001
+  jcfa attachment download PROJ-123 design.pdf
+  jcfa attachment download PROJ-123 design.pdf --output ./downloads/
+  jcfa attachment download PROJ-123 10001 --output custom-name.pdf`,
 	Args: cobra.ExactArgs(2),
 	RunE: runAttachmentDownload,
 }
@@ -97,8 +97,8 @@ Requires --confirm flag for safety.
 Note: You need appropriate permissions to delete attachments.
 
 Examples:
-  jira-cli attachment delete 10001 --confirm
-  jira-cli attachment delete 10002 --confirm --json`,
+  jcfa attachment delete 10001 --confirm
+  jcfa attachment delete 10002 --confirm --json`,
 	Args: cobra.ExactArgs(1),
 	RunE: runAttachmentDelete,
 }
@@ -268,7 +268,7 @@ func runAttachmentDownload(cmd *cobra.Command, args []string) error {
 		}
 
 		if attachment == nil {
-			return fmt.Errorf("attachment '%s' not found. Run 'jira-cli attachment list %s' to see available attachments", attachmentIDOrFilename, issueKey)
+			return fmt.Errorf("attachment '%s' not found. Run 'jcfa attachment list %s' to see available attachments", attachmentIDOrFilename, issueKey)
 		}
 	}
 

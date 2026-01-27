@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/sanisideup/jira-cli/pkg/client"
-	"github.com/sanisideup/jira-cli/pkg/config"
-	"github.com/sanisideup/jira-cli/pkg/models"
+	"github.com/sanisideup/jira-cli-for-agents/pkg/client"
+	"github.com/sanisideup/jira-cli-for-agents/pkg/config"
+	"github.com/sanisideup/jira-cli-for-agents/pkg/models"
 )
 
 // FieldService handles field-related operations
@@ -141,7 +141,7 @@ func (s *FieldService) ResolveFieldID(nameOrID string, cfg *config.Config) (stri
 	// Try to find by name
 	field, err := s.GetFieldByName(nameOrID)
 	if err != nil {
-		return "", fmt.Errorf("could not resolve '%s': not a valid field ID, alias, or field name. Run 'jira-cli fields list' to see available fields", nameOrID)
+		return "", fmt.Errorf("could not resolve '%s': not a valid field ID, alias, or field name. Run 'jcfa fields list' to see available fields", nameOrID)
 	}
 
 	return field.ID, nil

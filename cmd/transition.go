@@ -3,7 +3,7 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/sanisideup/jira-cli/pkg/jira"
+	"github.com/sanisideup/jira-cli-for-agents/pkg/jira"
 	"github.com/spf13/cobra"
 )
 
@@ -16,8 +16,8 @@ The status name is case-insensitive. If the specified status is not available
 for the issue, the command will show available transitions.
 
 Examples:
-  jira-cli transition PROJ-123 "In Progress"
-  jira-cli transition PROJ-123 "Done" --json`,
+  jcfa transition PROJ-123 "In Progress"
+  jcfa transition PROJ-123 "Done" --json`,
 	Args: cobra.ExactArgs(2),
 	RunE: runTransition,
 }

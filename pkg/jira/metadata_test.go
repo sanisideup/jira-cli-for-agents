@@ -3,7 +3,7 @@ package jira
 import (
 	"testing"
 
-	"github.com/sanisideup/jira-cli/pkg/models"
+	"github.com/sanisideup/jira-cli-for-agents/pkg/models"
 )
 
 func TestMetadataCache(t *testing.T) {

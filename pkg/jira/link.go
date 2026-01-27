@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/sanisideup/jira-cli/pkg/client"
-	"github.com/sanisideup/jira-cli/pkg/config"
-	"github.com/sanisideup/jira-cli/pkg/models"
+	"github.com/sanisideup/jira-cli-for-agents/pkg/client"
+	"github.com/sanisideup/jira-cli-for-agents/pkg/config"
+	"github.com/sanisideup/jira-cli-for-agents/pkg/models"
 )
 
 // LinkService handles issue linking operations, including epic-story relationships

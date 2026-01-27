@@ -1,12 +1,12 @@
 # Jira CLI Configuration Example
-# Copy this file to ~/.jira-cli/config.yaml and fill in your details
+# Copy this file to ~/.jcfa/config.yaml and fill in your details
 #
 # Quick Setup:
-#   1. Run: jira-cli configure (interactive setup)
+#   1. Run: jcfa configure (interactive setup)
 #   OR
 #   2. Copy this file and edit manually:
-#      cp config.example.yaml ~/.jira-cli/config.yaml
-#      chmod 600 ~/.jira-cli/config.yaml
+#      cp config.example.yaml ~/.jcfa/config.yaml
+#      chmod 600 ~/.jcfa/config.yaml
 
 # Your Jira domain (without https://)
 # Example: yourcompany.atlassian.net, acme.atlassian.net
@@ -27,7 +27,7 @@ default_project: PROJ
 
 # Field Mappings (Phase 2 Feature)
 # Map custom field IDs to human-readable aliases
-# Find your field IDs using: jira-cli fields list
+# Find your field IDs using: jcfa fields list
 #
 # Common custom field IDs (these vary by instance!):
 #   - Story Points: customfield_10016 or customfield_10002
@@ -52,7 +52,7 @@ field_mappings:
 
 # Note: Field IDs (customfield_*) are instance-specific
 # To find your field IDs:
-#   1. Run: jira-cli fields list
+#   1. Run: jcfa fields list
 #   2. Find the field name you want
 #   3. Copy its customfield_* ID
-#   4. Create a mapping above using: jira-cli fields map <alias> <field-id>
+#   4. Create a mapping above using: jcfa fields map <alias> <field-id>

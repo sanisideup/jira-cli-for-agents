@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/go-resty/resty/v2"
-	"github.com/sanisideup/jira-cli/pkg/config"
+	"github.com/sanisideup/jira-cli-for-agents/pkg/config"
 )
 
 // Client represents a Jira API client

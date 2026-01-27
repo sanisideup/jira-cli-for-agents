@@ -5,6 +5,38 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0] - 2026-01-27
+
+### ⚠️ Breaking Changes
+
+#### Project Rename
+- **Repository renamed**: `jira-cli` → `jira-cli-for-agents`
+- **Command shorthand**: `jcfa` is now the primary command (Jira CLI for Agents)
+- **Config directory**: Changed from `~/.jira-cli/` to `~/.jcfa/`
+- **Go module path**: Updated to `github.com/sanisideup/jira-cli-for-agents`
+- **Keyring service**: Changed from `jira-cli` to `jcfa`
+
+### Added
+
+#### Documentation
+- **"Why jcfa?" section** in README comparing jcfa to alternatives:
+  - Positions jcfa as automation-first (AI agents, CI/CD, scripts)
+  - Compares with [jira-cli](https://github.com/ankitpokhrel/jira-cli) (human-first TUI)
+  - Compares with [Atlassian CLI](https://developer.atlassian.com/cloud/acli/) (admin-first)
+
+### Migration Notes
+
+```bash
+# Move config directory
+mv ~/.jira-cli ~/.jcfa
+
+# Update scripts to use new command
+# Before: jira-cli search "project=PROJ"
+# After:  jcfa search "project=PROJ"
+```
+
+---
+
 ## [1.3.0] - 2026-01-27
 
 ### Added
@@ -51,7 +83,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### Enhanced Link Command Group
 - **`link create`**: New explicit subcommand for creating links between issues
-  - Usage: `jira-cli link create PROJ-123 PROJ-456 --type Blocks`
+  - Usage: `jcfa link create PROJ-123 PROJ-456 --type Blocks`
 - **`link types`**: List all available link types in your Jira instance
   - Shows name, inward description, and outward description
   - Supports `--json` output
@@ -64,7 +96,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### Subtask Creation
 - **`--parent` flag** on `create` command for creating subtasks
-  - Usage: `jira-cli create --template task --data task.json --parent PROJ-123`
+  - Usage: `jcfa create --template task --data task.json --parent PROJ-123`
   - Validates parent issue exists
   - Prevents creating sub-subtasks (parent cannot be a subtask)
   - Works with `--dry-run` for validation
@@ -73,7 +105,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - **Link command restructured** as a command group with subcommands
-- **Backward compatibility maintained**: Legacy `jira-cli link PROJ-123 PROJ-456 --type Blocks` syntax continues to work
+- **Backward compatibility maintained**: Legacy `jcfa link PROJ-123 PROJ-456 --type Blocks` syntax continues to work
 
 ### Technical Details
 
@@ -282,7 +314,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Version 1.0.0 - Initial Release
 
-This is the first stable release of jira-cli, a command-line interface for Jira Cloud designed for developer productivity and AI-assisted workflows.
+This is the first stable release of jcfa, a command-line interface for Jira Cloud designed for developer productivity and AI-assisted workflows.
 
 **Highlights:**
 - Complete CRUD operations for Jira issues
@@ -295,20 +327,20 @@ This is the first stable release of jira-cli, a command-line interface for Jira 
 **Getting Started:**
 ```bash
 # Install
-go install github.com/sanisideup/jira-cli@latest
+go install github.com/sanisideup/jira-cli-for-agents@latest
 
 # Configure
-jira-cli configure
+jcfa configure
 
 # Create issues
-jira-cli batch create issues.json
+jcfa batch create issues.json
 ```
 
 For detailed usage instructions, see the [README](README.md).
 
 ---
 
-[1.3.0]: https://github.com/sanisideup/jira-cli/releases/tag/v1.3.0
-[1.2.0]: https://github.com/sanisideup/jira-cli/releases/tag/v1.2.0
-[1.1.0]: https://github.com/sanisideup/jira-cli/releases/tag/v1.1.0
-[1.0.0]: https://github.com/sanisideup/jira-cli/releases/tag/v1.0.0
+[1.3.0]: https://github.com/sanisideup/jira-cli-for-agents/releases/tag/v1.3.0
+[1.2.0]: https://github.com/sanisideup/jira-cli-for-agents/releases/tag/v1.2.0
+[1.1.0]: https://github.com/sanisideup/jira-cli-for-agents/releases/tag/v1.1.0
+[1.0.0]: https://github.com/sanisideup/jira-cli-for-agents/releases/tag/v1.0.0

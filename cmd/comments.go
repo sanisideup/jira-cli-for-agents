@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/sanisideup/jira-cli/pkg/jira"
+	"github.com/sanisideup/jira-cli-for-agents/pkg/jira"
 	"github.com/spf13/cobra"
 )
 
@@ -28,7 +28,7 @@ Subcommands:
   delete  - Delete a comment
 
 For backward compatibility, you can still use:
-  jira-cli comment PROJ-123 "text"`,
+  jcfa comment PROJ-123 "text"`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// If called without subcommand, show help
 		cmd.Help()
@@ -42,8 +42,8 @@ var commentAddCmd = &cobra.Command{
 	Long: `Add a text comment to an existing Jira issue.
 
 Examples:
-  jira-cli comments add PROJ-123 "This is a comment"
-  jira-cli comments add PROJ-123 "Updated the implementation" --json`,
+  jcfa comments add PROJ-123 "This is a comment"
+  jcfa comments add PROJ-123 "Updated the implementation" --json`,
 	Args: cobra.ExactArgs(2),
 	RunE: runCommentAdd,
 }
@@ -55,9 +55,9 @@ var commentListCmd = &cobra.Command{
 	Long: `List all comments on an issue with pagination support.
 
 Examples:
-  jira-cli comments list PROJ-123
-  jira-cli comments list PROJ-123 --limit 10
-  jira-cli comments list PROJ-123 --order -created --json`,
+  jcfa comments list PROJ-123
+  jcfa comments list PROJ-123 --limit 10
+  jcfa comments list PROJ-123 --order -created --json`,
 	Args: cobra.ExactArgs(1),
 	RunE: runCommentList,
 }
@@ -69,8 +69,8 @@ var commentGetCmd = &cobra.Command{
 	Long: `Get the full details of a specific comment by ID.
 
 Examples:
-  jira-cli comments get PROJ-123 10001
-  jira-cli comments get PROJ-123 10001 --json`,
+  jcfa comments get PROJ-123 10001
+  jcfa comments get PROJ-123 10001 --json`,
 	Args: cobra.ExactArgs(2),
 	RunE: runCommentGet,
 }
@@ -84,8 +84,8 @@ var commentUpdateCmd = &cobra.Command{
 Note: You can only update comments you created or if you have admin permissions.
 
 Examples:
-  jira-cli comments update PROJ-123 10001 "Updated comment text"
-  jira-cli comments update PROJ-123 10001 "Fixed typo" --json`,
+  jcfa comments update PROJ-123 10001 "Updated comment text"
+  jcfa comments update PROJ-123 10001 "Fixed typo" --json`,
 	Args: cobra.ExactArgs(3),
 	RunE: runCommentUpdate,
 }
@@ -100,8 +100,8 @@ Note: You can only delete comments you created or if you have admin permissions.
 Requires --confirm flag for safety.
 
 Examples:
-  jira-cli comments delete PROJ-123 10001 --confirm
-  jira-cli comments delete PROJ-123 10002 --confirm --json`,
+  jcfa comments delete PROJ-123 10001 --confirm
+  jcfa comments delete PROJ-123 10002 --confirm --json`,
 	Args: cobra.ExactArgs(2),
 	RunE: runCommentDelete,
 }

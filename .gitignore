@@ -7,6 +7,7 @@ CLAUDE.md
 
 # Binaries for programs and plugins
 jira-cli
+jcfa
 *.exe
 *.exe~
 *.dll
@@ -25,6 +26,7 @@ go.work
 # Config files
 config.yaml
 .jira-cli/
+.jcfa/
 
 # Build directory
 dist/
