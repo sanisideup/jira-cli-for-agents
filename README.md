@@ -519,6 +519,100 @@ jira-cli version
 jira-cli version --json
 ```
 
+### Allowlist Management
+
+Manage command restrictions for sandboxed or AI-assisted execution.
+
+#### View Status
+
+```bash
+# Show current allowlist status
+jira-cli allowlist status
+jira-cli allowlist status --json
+```
+
+Output:
+```
+Command Allowlist Status
+========================
+
+Status: ENABLED (read-only mode)
+Mode:   JIRA_READONLY=1
+
+Only read operations are allowed. Write commands are blocked.
+
+Allowed commands:
+  ✓ attachment list
+  ✓ comments get
+  ✓ comments list
+  ✓ fields
+  ✓ get
+  ✓ help
+  ...
+
+Note: 'help', 'version', '--help', '-h' are always allowed.
+```
+
+#### List Commands by Category
+
+```bash
+# List all commands categorized as read/write
+jira-cli allowlist commands
+jira-cli allowlist commands --json
+```
+
+Output:
+```
+Available Commands by Category
+==============================
+
+READ COMMANDS (11) - Safe for read-only mode:
+  ✓ attachment list
+  ✓ comments get
+  ✓ comments list
+  ✓ fields
+  ✓ get
+  ✓ help
+  ✓ link list
+  ✓ link types
+  ✓ list
+  ✓ search
+  ✓ version
+
+WRITE COMMANDS (16) - Blocked in read-only mode:
+  ✗ attachment delete
+  ✗ attachment upload
+  ✗ batch
+  ✗ batch create
+  ...
+
+Total: 27 commands
+```
+
+#### Check Specific Command
+
+```bash
+# Check if a command is allowed (exit code 0=allowed, 1=blocked)
+jira-cli allowlist check get
+jira-cli allowlist check create
+
+# Useful in scripts
+if jira-cli allowlist check create; then
+  jira-cli create --template story --data story.json
+else
+  echo "Create command is blocked"
+fi
+```
+
+#### Enable Instructions
+
+```bash
+# Show how to enable allowlist restrictions
+jira-cli allowlist enable
+```
+
+Displays platform-specific instructions for enabling read-only mode or custom allowlists.
+
 ## Global Flags
 
 All commands support these global flags:
@@ -612,7 +706,16 @@ See [examples/ai-workflow.md](examples/ai-workflow.md) for detailed examples.
 
 ### Secure Credential Storage
 
-By default, API tokens are stored in `~/.jira-cli/config.yaml` with restricted permissions (0600). For enhanced security, you can use OS keyring integration:
+By default, API tokens are stored in `~/.jira-cli/config.yaml` with restricted permissions (0600). For enhanced security, the `configure` command offers to store your API token in the OS keyring:
+
+```bash
+jira-cli configure
+# ...
+# Store API token securely in system keyring? [Y/n]: y
+# ✓ API token stored securely in keychain
+```
+
+You can also configure the backend via environment variables:
 
 ```bash
 # Use OS keyring (macOS Keychain, Windows Credential Manager, Linux Secret Service)
@@ -625,6 +728,9 @@ export JIRA_KEYRING_PASSWORD='your-secure-password'
 
 **Supported backends:**
 - `auto` (default): Automatically selects the best backend for your platform
+  - macOS/Windows: Uses OS keyring
+  - Linux with GUI: Uses Secret Service
+  - CI/headless: Uses encrypted file
 - `keychain`: OS keyring (recommended for interactive use)
 - `file`: Encrypted file (for CI/SSH environments)
 
@@ -642,13 +748,16 @@ export JIRA_COMMAND_ALLOWLIST="get,search,list,fields"
 
 **Read-only commands** (safe for AI agents):
 - `get`, `search`, `list`, `fields`, `version`, `help`
-- `attachment list`, `comments list`, `link list`, `link types`
+- `attachment list`, `comments list`, `comments get`, `link list`, `link types`
 
-**Write commands** (blocked unless explicitly allowed):
-- `create`, `update`, `transition`, `batch`
-- `comment`, `link create/delete`, `attachment upload/delete`
+**Write commands** (blocked in read-only mode):
+- `create`, `update`, `transition`, `batch`, `batch create`
+- `comment`, `comments add/update/delete`
+- `link`, `link create/delete`
+- `attachment upload/delete`
+- `configure`, `template`
 
-This prevents AI agents from accidentally running destructive operations.
+Use `jira-cli allowlist status` to view current restrictions or `jira-cli allowlist commands` to see all commands by category.
 
 ## Exit Codes
 
@@ -738,8 +847,10 @@ jira-cli/
 │   ├── update.go          # Update issue
 │   ├── comment.go         # Add comments
 │   ├── transition.go      # Status transitions
-│   └── link.go            # Issue linking (create, types, list, delete)
+│   ├── link.go            # Issue linking (create, types, list, delete)
+│   └── allowlist.go       # Allowlist management commands
 ├── pkg/
+│   ├── allowlist/         # Command restriction for agent safety
 │   ├── client/            # HTTP client with retry
 │   ├── config/            # Config management
 │   ├── jira/              # Jira services
@@ -748,7 +859,8 @@ jira-cli/
 │   │   ├── issue.go       # Issue operations
 │   │   ├── link.go        # Issue linking
 │   │   └── search.go      # Search operations
-│   └── models/            # Data models
+│   ├── models/            # Data models
+│   └── secrets/           # Secure credential storage
 ├── templates/             # Default templates
 └── main.go                # Entry point
 ```

@@ -98,9 +98,12 @@ This project follows standard Go conventions:
 jira-cli/
 ├── cmd/           # CLI commands (Cobra)
 ├── pkg/
+│   ├── allowlist/ # Command restriction for sandboxed execution
 │   ├── client/    # Jira API client
 │   ├── config/    # Configuration management
+│   ├── jira/      # Jira API services
 │   ├── models/    # Data structures
+│   ├── secrets/   # Secure credential storage (keyring/file)
 │   └── template/  # Issue templates
 ├── examples/      # Example files and scripts
 └── docs/          # Documentation
@@ -137,6 +140,43 @@ For integration testing, you'll need:
 3. A test project with appropriate permissions
 
 **Important**: Never commit real credentials or test data.
+
+### Security Feature Testing
+
+#### Allowlist Testing
+
+```bash
+# Test with read-only mode
+JIRA_READONLY=1 go test ./pkg/allowlist/...
+
+# Test with custom allowlist
+JIRA_COMMAND_ALLOWLIST="get,search" go test ./pkg/allowlist/...
+
+# Run all allowlist tests (includes edge cases)
+go test -v ./pkg/allowlist/...
+```
+
+#### Credential Storage Testing
+
+```bash
+# Test file backend (safe for CI)
+JIRA_KEYRING_BACKEND=file JIRA_KEYRING_PASSWORD=test go test ./pkg/secrets/...
+
+# Keychain tests require interactive session on macOS/Windows
+# They are automatically skipped on unsupported platforms
+go test -v ./pkg/secrets/...
+```
+
+### Environment Variables for Testing
+
+| Variable | Description |
+|----------|-------------|
+| `JIRA_READONLY` | Enable read-only mode for allowlist tests |
+| `JIRA_COMMAND_ALLOWLIST` | Comma-separated list of allowed commands |
+| `JIRA_KEYRING_BACKEND` | Credential storage: `auto`, `keychain`, `file` |
+| `JIRA_KEYRING_PASSWORD` | Password for file backend tests |
+| `JIRA_TEST_PROJECT` | Project key for integration tests |
+| `CI` | Set automatically in CI; triggers file backend |
 
 ## Submitting Changes
 

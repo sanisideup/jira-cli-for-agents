@@ -72,6 +72,7 @@ cat issues.json | jira batch create --dry-run
 │  ┌──────────┬──────────┬──────────┬──────────┬───────────┐  │
 │  │configure │  fields  │ template │  create  │   batch   │  │
 │  │  get     │  search  │  update  │transition│   link    │  │
+│  │ allowlist│          │          │          │           │  │
 │  └──────────┴──────────┴──────────┴──────────┴───────────┘  │
 └────────────────────────┬────────────────────────────────────┘
                          │
@@ -81,6 +82,9 @@ cat issues.json | jira batch create --dry-run
 │  │IssueService  │FieldService │MetadataService│LinkService│  │
 │  │TemplateServ  │ConfigService│ HierarchyServ │ LogService│  │
 │  └──────────────┴─────────────┴──────────────┴───────────┘  │
+│  ┌──────────────┬─────────────┐                             │
+│  │AllowlistChkr │SecretsStore │  (Security Layer)           │
+│  └──────────────┴─────────────┘                             │
 └────────────────────────┬────────────────────────────────────┘
                          │
 ┌────────────────────────▼────────────────────────────────────┐
@@ -115,6 +119,8 @@ cat issues.json | jira batch create --dry-run
 - Template rendering
 - Field alias resolution
 - Epic/parent linking logic
+- Command allowlist validation (`pkg/allowlist/`)
+- Secure credential storage (`pkg/secrets/`)
 
 #### **HTTP Client Layer** (`pkg/client/`)
 - Low-level HTTP communication
@@ -848,6 +854,179 @@ httpClient := &http.Client{
 - Always use HTTPS (upgrade HTTP to HTTPS)
 - Validate TLS certificates
 - Allow `--insecure` flag only for testing (with warning)
+
+---
+
+## Credential Storage Layer (`pkg/secrets/`)
+
+**Problem**: API tokens in plaintext config files are a security risk, especially on shared systems.
+
+**Solution**: Multi-backend secure storage system with automatic platform detection.
+
+### Architecture
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                     Store Interface                          │
+│  ┌─────────────────────────────────────────────────────┐    │
+│  │  Store(account, creds)  Retrieve(account)  Delete() │    │
+│  └─────────────────────────────────────────────────────┘    │
+└────────────────────────┬────────────────────────────────────┘
+                         │
+         ┌───────────────┼───────────────┐
+         │               │               │
+         ▼               ▼               ▼
+┌─────────────┐  ┌─────────────┐  ┌─────────────┐
+│  Keychain   │  │    File     │  │    Auto     │
+│  Backend    │  │   Backend   │  │  Selector   │
+├─────────────┤  ├─────────────┤  ├─────────────┤
+│ macOS:      │  │ Encrypted   │  │ Platform    │
+│  Keychain   │  │ JSON file   │  │ detection   │
+│ Windows:    │  │ + password  │  │ CI/env      │
+│  Credential │  │             │  │ awareness   │
+│  Manager    │  │             │  │             │
+│ Linux:      │  │             │  │             │
+│  Secret Svc │  │             │  │             │
+└─────────────┘  └─────────────┘  └─────────────┘
+```
+
+### Backend Selection Logic
+
+```go
+func selectBestBackend() Backend {
+    // CI environments use file backend
+    if os.Getenv("CI") != "" {
+        return BackendFile
+    }
+    // Explicit override
+    if os.Getenv("JIRA_KEYRING_BACKEND") == "file" {
+        return BackendFile
+    }
+
+    switch runtime.GOOS {
+    case "darwin", "windows":
+        return BackendKeychain  // OS keyring available
+    case "linux":
+        if hasDisplay() {       // GUI available
+            return BackendKeychain
+        }
+        return BackendFile      // Headless/SSH
+    default:
+        return BackendFile
+    }
+}
+```
+
+### Backends
+
+| Backend | Use Case | Security | Env Vars |
+|---------|----------|----------|----------|
+| `keychain` | Interactive (macOS/Windows) | OS-level encryption | None required |
+| `file` | CI/SSH/Headless | Password-based encryption | `JIRA_KEYRING_PASSWORD` |
+| `auto` | Default | Selects best for platform | Optional overrides |
+
+### Integration Flow
+
+```
+configure command
+    │
+    ├─► Prompt: "Store API token securely in system keyring? [Y/n]"
+    │
+    ├─► Yes ─► NewStore(BackendAuto)
+    │         ├─► Store(email, {APIToken})
+    │         ├─► Set cfg.UseKeyring = true
+    │         └─► Set cfg.KeyringBackend = detected
+    │
+    └─► No ──► Store token in config.yaml (legacy)
+
+root command (on every request)
+    │
+    └─► if cfg.UseKeyring
+        └─► store.Retrieve(email) ─► cfg.APIToken
+```
+
+---
+
+## Command Allowlist Layer (`pkg/allowlist/`)
+
+**Problem**: AI agents or sandboxed scripts may accidentally execute destructive commands (create, delete, update).
+
+**Solution**: Environment-based command restriction system.
+
+### Architecture
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                       Checker                                │
+│  ┌─────────────────────────────────────────────────────┐    │
+│  │  IsAllowed(cmd)  Check(cmd)  GetAllowedCommands()   │    │
+│  └─────────────────────────────────────────────────────┘    │
+└────────────────────────┬────────────────────────────────────┘
+                         │
+         ┌───────────────┴───────────────┐
+         │                               │
+         ▼                               ▼
+┌─────────────────────┐      ┌─────────────────────┐
+│  Read-Only Mode     │      │  Explicit Allowlist │
+│  JIRA_READONLY=1    │      │  JIRA_COMMAND_      │
+├─────────────────────┤      │  ALLOWLIST=cmd,cmd  │
+│ Auto-populates from │      ├─────────────────────┤
+│ ReadOnlyCommands[]  │      │ User specifies      │
+│                     │      │ exact commands      │
+└─────────────────────┘      └─────────────────────┘
+```
+
+### Modes
+
+1. **Read-Only Mode** (`JIRA_READONLY=1`)
+   - Auto-allows all read commands (get, search, list, etc.)
+   - Blocks all write commands (create, update, delete, etc.)
+   - Ideal for AI agents that should only observe
+
+2. **Explicit Allowlist** (`JIRA_COMMAND_ALLOWLIST=cmd1,cmd2`)
+   - Only specified commands are allowed
+   - Fine-grained control for specific use cases
+
+### Command Categories
+
+**Read Commands** (11 total):
+- `get`, `search`, `list`, `fields`, `version`, `help`
+- `attachment list`, `comments list`, `comments get`
+- `link list`, `link types`
+
+**Write Commands** (16 total):
+- `create`, `update`, `transition`, `comment`
+- `comments add`, `comments update`, `comments delete`
+- `batch`, `batch create`
+- `link`, `link create`, `link delete`
+- `attachment upload`, `attachment delete`
+- `configure`, `template`
+
+### Integration Flow
+
+```
+root.PersistentPreRunE
+    │
+    ├─► Skip for: help, version, allowlist (always allowed)
+    │
+    └─► allowlistChecker.Check(cmdPath)
+        │
+        ├─► Allowed ─► Continue to command execution
+        │
+        └─► Blocked ─► Return error with explanation
+            "command 'create' is blocked: JIRA_READONLY mode enabled"
+```
+
+### CLI Management
+
+The `allowlist` command provides runtime introspection:
+
+```bash
+jira-cli allowlist status    # View current configuration
+jira-cli allowlist commands  # List commands by category
+jira-cli allowlist check X   # Test if command X is allowed
+jira-cli allowlist enable    # Show enable instructions
+```
 
 ---
 
