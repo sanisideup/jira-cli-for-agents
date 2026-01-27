@@ -1,6 +1,6 @@
 # AGENTS.md — AI Agent & Contributor Guidelines
 
-This document provides guidelines for AI agents (Claude, GPT, Gemini, Copilot, etc.) and contributors working with this codebase.
+This document provides guidelines for AI agents (Claude, Codex, OpenCode, etc.) and contributors working with this codebase.
 
 ## Project Overview
 
@@ -256,6 +256,110 @@ jcfa configure
 **"keyring unavailable"**
 - Use file backend: `export JIRA_KEYRING_BACKEND=file`
 - Set password: `export JIRA_KEYRING_PASSWORD=...`
+
+## Building Skills on Top of jcfa
+
+AI agents (Claude, Codex, OpenCode, or any agentic coding tool) can create **skills**—custom workflows that combine multiple `jcfa` commands to automate complex Jira operations.
+
+### How Agents Should Approach Skills
+
+1. **Read and understand the CLI** — Parse this file, README.md, and `jcfa --help` output to learn available commands
+2. **Identify user workflows** — Understand what repetitive Jira tasks the user performs
+3. **Compose commands** — Chain `jcfa` commands together to accomplish multi-step workflows
+4. **Use JSON output** — Always use `--json` flag when output needs to be parsed programmatically
+5. **Validate first** — Use `--dry-run` for any write operations before executing
+
+### Skill Implementation Pattern
+
+When implementing a skill, follow this pattern:
+
+```bash
+# 1. Gather information (read operations)
+jcfa search "project = PROJ AND ..." --json > context.json
+
+# 2. Generate data (agent creates JSON based on user input + context)
+# Agent writes issues.json based on analysis
+
+# 3. Validate before writing
+jcfa batch create issues.json --dry-run
+
+# 4. Execute with user confirmation
+jcfa batch create issues.json
+
+# 5. Report results
+jcfa get PROJ-123 --json
+```
+
+### Example: Agent-Implemented Sprint Planning Skill
+
+```python
+# Pseudocode for how an agent might implement a skill
+
+def sprint_planning_skill(sprint_name, goals):
+    # 1. Check existing epics to avoid duplicates
+    existing = run("jcfa search 'project = PROJ AND type = Epic' --json")
+
+    # 2. Generate issues from goals
+    issues = []
+    for goal in goals:
+        epic = {"template": "epic", "data": {"Summary": goal, "EpicName": sprint_name}}
+        stories = break_down_goal_to_stories(goal)  # Agent's analysis
+        issues.append(epic)
+        issues.extend(stories)
+
+    # 3. Write and validate
+    write_json("sprint-issues.json", issues)
+    validation = run("jcfa batch create sprint-issues.json --dry-run")
+
+    # 4. Show user and get confirmation
+    if user_confirms(validation):
+        result = run("jcfa batch create sprint-issues.json --json")
+        return parse_created_keys(result)
+```
+
+### Skill Storage Locations
+
+Store skill definitions where your agent can access them:
+
+| Agent | Location | Format |
+|-------|----------|--------|
+| Claude | `.claude/commands/skill-name.md` | Markdown with steps |
+| Codex | Project instructions / system prompt | Natural language |
+| OpenCode | `.opencode/skills/` or config | Tool definitions |
+| Custom agents | Agent-specific config | Varies |
+
+### Safety Considerations for Skills
+
+When building skills, agents should:
+
+1. **Use read-only mode for exploration**: `JIRA_READONLY=1`
+2. **Always dry-run write operations**: `--dry-run` flag
+3. **Confirm batch operations with user** before execution
+4. **Handle errors gracefully** using exit codes (see Error Handling section)
+5. **Never store credentials in skill definitions**
+
+### Skill Categories
+
+**Read-Only Skills** (safe, no confirmation needed):
+- Daily standup report
+- Sprint progress summary
+- Bug triage dashboard
+- Search and filter operations
+
+**Write Skills** (require user confirmation):
+- Sprint planning (batch create)
+- Bug assignment
+- Status transitions
+- Bulk updates
+
+### Recommended Skill Capabilities
+
+Agents should consider building skills for:
+
+- **Sprint ceremonies**: Planning, retrospectives, backlog grooming
+- **Triage workflows**: Bug triage, feature requests, support tickets
+- **Reporting**: Velocity, burndown, team workload
+- **Automation**: Meeting notes → issues, PR → linked issues, alerts → bugs
 
 ## Resources
 

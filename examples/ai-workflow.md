@@ -1,6 +1,6 @@
 # Using jcfa with AI Assistants
 
-This guide demonstrates how to use jcfa with AI assistants (Claude, ChatGPT, Gemini, Copilot, etc.) for AI-assisted project management.
+This guide demonstrates how to use jcfa with AI assistants (Claude, Codex, OpenCode, etc.) for AI-assisted project management.
 
 ## Workflow Overview
 

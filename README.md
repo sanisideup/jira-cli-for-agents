@@ -34,7 +34,7 @@ There are several excellent Jira CLIs. Here's how jcfa differs:
 ### When to use each tool
 
 **Choose jcfa when:**
-- Building AI agent workflows (Claude, GPT, Copilot)
+- Building AI agent workflows (Claude, Codex, OpenCode)
 - Creating issues programmatically from meeting notes or specs
 - Running in CI/CD pipelines or automation scripts
 - Sandboxing AI agents with read-only restrictions
@@ -731,7 +731,7 @@ fields:
 
 ## Usage with AI Assistants
 
-This CLI is designed to work seamlessly with AI assistants (Claude, ChatGPT, Gemini, Copilot, etc.) for AI-assisted project management.
+This CLI is designed to work seamlessly with AI assistants (Claude, Codex, OpenCode, etc.) for AI-assisted project management.
 
 ### Example Workflow
 
@@ -741,6 +741,135 @@ This CLI is designed to work seamlessly with AI assistants (Claude, ChatGPT, Gem
 4. **Review** created issues in Jira
 
 See [examples/ai-workflow.md](examples/ai-workflow.md) for detailed examples.
+
+## Building Skills on Top of jcfa
+
+One of the most powerful ways to use `jcfa` is to create **skills** (custom workflows) that your AI agent can execute. Skills let you encapsulate complex, multi-step Jira operations into reusable commands tailored to your team's specific needs.
+
+### What Are Skills?
+
+Skills are predefined workflows that your AI agent (Claude, Codex, OpenCode, or any agentic coding tool) can understand and execute. Instead of manually instructing your agent each time, you define a skill once, and the agent can invoke it whenever needed.
+
+### How It Works
+
+1. **Let your AI agent read the CLI** — Point your agent to this README, the `--help` output, or the codebase itself
+2. **Agent learns available commands** — The agent understands `jcfa`'s capabilities (create, search, batch, etc.)
+3. **Define custom skills** — Create skill definitions that combine multiple `jcfa` commands for your workflows
+4. **Agent executes skills** — When you invoke a skill, the agent runs the appropriate `jcfa` commands
+
+### Example Skills
+
+#### Sprint Planning Skill
+
+```markdown
+# Skill: Sprint Planning
+
+When the user says "plan sprint" or "create sprint issues":
+
+1. Ask for the sprint name and goals
+2. Generate a JSON file with:
+   - 1 Epic for the sprint goal
+   - Stories broken down from the goals (estimate story points)
+   - Tasks for each story
+3. Run: `jcfa batch create sprint-issues.json --dry-run`
+4. Show the user what will be created
+5. On confirmation, run: `jcfa batch create sprint-issues.json`
+6. Report created issue keys
+```
+
+#### Bug Triage Skill
+
+```markdown
+# Skill: Bug Triage
+
+When the user says "triage bugs" or "show open bugs":
+
+1. Run: `jcfa search "project = PROJ AND type = Bug AND status = Open ORDER BY priority DESC" --json`
+2. Summarize bugs by priority and age
+3. For each critical bug, show:
+   - Summary, reporter, days open
+   - Suggested assignee based on component
+4. Ask which bugs to assign or transition
+5. Execute transitions: `jcfa transition BUG-123 "In Progress"`
+```
+
+#### Meeting Notes to Issues Skill
+
+```markdown
+# Skill: Meeting Notes to Issues
+
+When the user provides meeting notes or a transcript:
+
+1. Parse the notes for action items and decisions
+2. Identify:
+   - New features → Stories
+   - Bugs mentioned → Bug issues
+   - Tasks assigned → Tasks with assignees
+3. Generate issues.json with appropriate templates
+4. Run: `jcfa batch create issues.json --dry-run`
+5. Review with user, then create
+```
+
+#### Daily Standup Skill
+
+```markdown
+# Skill: Daily Standup Report
+
+When the user says "standup" or "what's my status":
+
+1. Run: `jcfa search "assignee = currentUser() AND status = 'In Progress'" --json`
+2. Run: `jcfa search "assignee = currentUser() AND status changed to Done after -1d" --json`
+3. Format as:
+   - **Yesterday**: Completed issues
+   - **Today**: In-progress issues
+   - **Blockers**: Issues with "blocked" label or link
+```
+
+### Creating Your Own Skills
+
+To create skills for your AI agent:
+
+1. **Document the workflow** — Write clear steps the agent should follow
+2. **Map to jcfa commands** — Identify which `jcfa` commands accomplish each step
+3. **Add to agent context** — Store skills where your agent can access them:
+   - Claude: `.claude/commands/` or `CLAUDE.md`
+   - Codex/OpenCode: Project instructions or system prompts
+   - Other agents: Follow their skill/tool definition format
+
+4. **Test with dry-run** — Always use `--dry-run` for write operations during development
+
+### Skill Definition Template
+
+```markdown
+# Skill: [Skill Name]
+
+## Trigger
+[When should the agent invoke this skill]
+
+## Inputs
+[What information the agent needs from the user]
+
+## Steps
+1. [First jcfa command or action]
+2. [Second command]
+3. [Continue...]
+
+## Output
+[What the agent should report back to the user]
+
+## Safety
+- Always use --dry-run before write operations
+- Confirm with user before batch operations
+- Use JIRA_READONLY=1 for read-only skills
+```
+
+### Tips for Effective Skills
+
+- **Start simple** — Build skills incrementally, testing each step
+- **Use JSON output** — Add `--json` for programmatic parsing by the agent
+- **Leverage templates** — Create custom templates in `~/.jcfa/templates/` for your issue types
+- **Set up field aliases** — Map custom fields once: `jcfa fields map story_points customfield_10016`
+- **Enable safety modes** — Use `JIRA_READONLY=1` for read-only skills to prevent accidents
 
 ## Security
 
