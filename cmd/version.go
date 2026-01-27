@@ -8,7 +8,7 @@ import (
 
 var (
 	// Version is the current version of the CLI
-	Version = "0.1.0"
+	Version = "1.3.0"
 	// BuildDate is the date the binary was built
 	BuildDate = "unknown"
 	// GitCommit is the git commit hash
