@@ -1,4 +1,4 @@
-# jira-cli-for-agents
+# jira-cli-for-agents (jcfa)
 
 A fast, scriptable CLI for Jira Cloud designed for AI-assisted workflows and developer productivity.
 
