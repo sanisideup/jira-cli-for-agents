@@ -14,6 +14,8 @@ A fast, scriptable CLI for Jira Cloud designed for AI-assisted workflows and dev
 - ✅ **Issue Management**: Complete CRUD operations for issues
 - ✅ **Comment Management**: Add, list, update, and delete comments on issues
 - ✅ **Attachment Support**: Upload, download, list, and delete file attachments
+- ✅ **Secure Credential Storage**: OS keyring integration (macOS Keychain, Windows Credential Manager, Linux Secret Service)
+- ✅ **Agent Safety**: Command allowlist for sandboxed/AI-assisted execution
 
 ## Installation
 
@@ -605,6 +607,48 @@ This CLI is designed to work seamlessly with AI assistants (Claude, ChatGPT, Gem
 4. **Review** created issues in Jira
 
 See [examples/ai-workflow.md](examples/ai-workflow.md) for detailed examples.
+
+## Security
+
+### Secure Credential Storage
+
+By default, API tokens are stored in `~/.jira-cli/config.yaml` with restricted permissions (0600). For enhanced security, you can use OS keyring integration:
+
+```bash
+# Use OS keyring (macOS Keychain, Windows Credential Manager, Linux Secret Service)
+export JIRA_KEYRING_BACKEND=keychain
+
+# Or use encrypted file (for CI/headless environments)
+export JIRA_KEYRING_BACKEND=file
+export JIRA_KEYRING_PASSWORD='your-secure-password'
+```
+
+**Supported backends:**
+- `auto` (default): Automatically selects the best backend for your platform
+- `keychain`: OS keyring (recommended for interactive use)
+- `file`: Encrypted file (for CI/SSH environments)
+
+### Command Allowlist (Agent Safety)
+
+When running in sandboxed or AI-assisted environments, you can restrict which commands are allowed:
+
+```bash
+# Enable read-only mode (only allows get, search, list, fields, etc.)
+export JIRA_READONLY=1
+
+# Or specify exact commands allowed
+export JIRA_COMMAND_ALLOWLIST="get,search,list,fields"
+```
+
+**Read-only commands** (safe for AI agents):
+- `get`, `search`, `list`, `fields`, `version`, `help`
+- `attachment list`, `comments list`, `link list`, `link types`
+
+**Write commands** (blocked unless explicitly allowed):
+- `create`, `update`, `transition`, `batch`
+- `comment`, `link create/delete`, `attachment upload/delete`
+
+This prevents AI agents from accidentally running destructive operations.
 
 ## Exit Codes
 

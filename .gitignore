@@ -1,7 +1,6 @@
-# Agents
+# Agents (keep AGENTS.md - it's contributor documentation)
 .claude/
 CLAUDE.md
-AGENTS.md
 
 # New feature development
 .new-features/

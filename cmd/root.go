@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/sanisideup/jira-cli/pkg/allowlist"
 	"github.com/sanisideup/jira-cli/pkg/client"
 	"github.com/sanisideup/jira-cli/pkg/config"
 	"github.com/spf13/cobra"
@@ -17,8 +18,9 @@ var (
 	noColor    bool
 
 	// Global variables
-	cfg        *config.Config
-	jiraClient *client.Client
+	cfg              *config.Config
+	jiraClient       *client.Client
+	allowlistChecker *allowlist.Checker
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -28,6 +30,22 @@ var rootCmd = &cobra.Command{
 	Long: `jira-cli is a command-line interface for interacting with Jira Cloud.
 It provides commands for managing issues, projects, and more.`,
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+		// Initialize allowlist checker
+		allowlistChecker = allowlist.NewChecker()
+
+		// Check if command is allowed (skip for help/version which are always allowed)
+		if cmd.Name() != "help" && cmd.Name() != "version" {
+			// Build full command path for nested commands
+			cmdPath := cmd.Name()
+			if cmd.Parent() != nil && cmd.Parent().Name() != "jira-cli" {
+				cmdPath = cmd.Parent().Name() + " " + cmd.Name()
+			}
+
+			if err := allowlistChecker.Check(cmdPath); err != nil {
+				return err
+			}
+		}
+
 		// Skip config loading for commands that don't need it
 		if cmd.Name() == "configure" || cmd.Name() == "version" || cmd.Name() == "help" || cmd.Name() == "template" {
 			return nil
