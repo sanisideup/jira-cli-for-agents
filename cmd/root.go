@@ -7,6 +7,7 @@ import (
 	"github.com/sanisideup/jira-cli/pkg/allowlist"
 	"github.com/sanisideup/jira-cli/pkg/client"
 	"github.com/sanisideup/jira-cli/pkg/config"
+	"github.com/sanisideup/jira-cli/pkg/secrets"
 	"github.com/spf13/cobra"
 )
 
@@ -33,8 +34,8 @@ It provides commands for managing issues, projects, and more.`,
 		// Initialize allowlist checker
 		allowlistChecker = allowlist.NewChecker()
 
-		// Check if command is allowed (skip for help/version which are always allowed)
-		if cmd.Name() != "help" && cmd.Name() != "version" {
+		// Check if command is allowed (skip for help/version/allowlist which are always allowed)
+		if cmd.Name() != "help" && cmd.Name() != "version" && cmd.Name() != "allowlist" && (cmd.Parent() == nil || cmd.Parent().Name() != "allowlist") {
 			// Build full command path for nested commands
 			cmdPath := cmd.Name()
 			if cmd.Parent() != nil && cmd.Parent().Name() != "jira-cli" {
@@ -47,7 +48,7 @@ It provides commands for managing issues, projects, and more.`,
 		}
 
 		// Skip config loading for commands that don't need it
-		if cmd.Name() == "configure" || cmd.Name() == "version" || cmd.Name() == "help" || cmd.Name() == "template" {
+		if cmd.Name() == "configure" || cmd.Name() == "version" || cmd.Name() == "help" || cmd.Name() == "template" || cmd.Name() == "allowlist" || (cmd.Parent() != nil && cmd.Parent().Name() == "allowlist") {
 			return nil
 		}
 
@@ -63,6 +64,20 @@ It provides commands for managing issues, projects, and more.`,
 
 		if err != nil {
 			return fmt.Errorf("failed to load config: %w\nRun 'jira-cli configure' to set up your credentials", err)
+		}
+
+		// Retrieve API token from keyring if configured
+		if cfg.UseKeyring {
+			backend := secrets.Backend(cfg.KeyringBackend)
+			if backend == "" {
+				backend = secrets.BackendAuto
+			}
+			store := secrets.NewStore(backend)
+			creds, err := store.Retrieve(cfg.Email)
+			if err != nil {
+				return fmt.Errorf("failed to retrieve credentials from keyring: %w", err)
+			}
+			cfg.APIToken = creds.APIToken
 		}
 
 		// Initialize Jira client

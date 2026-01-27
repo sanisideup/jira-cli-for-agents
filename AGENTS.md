@@ -8,7 +8,7 @@ This document provides guidelines for AI agents (Claude, GPT, Gemini, Copilot, e
 
 - **Batch operations** — Create dozens of issues from structured JSON
 - **Schema validation** — Catch errors before API submission
-- **Field abstraction** — Human-friendly aliases instead of cryptic field IDs
+- **Custom field support** — Human-friendly aliases instead of cryptic field IDs
 - **Scriptability** — JSON input/output for integration with other tools
 
 ## Project Structure
@@ -122,10 +122,10 @@ export JIRA_READONLY=1
 export JIRA_COMMAND_ALLOWLIST="get,search,list,fields"
 ```
 
-This prevents AI agents from accidentally running destructive operations.
+This prevents accidentally running destructive operations.
 
 #### Read-Only Commands
-Safe for AI agents:
+Safe:
 - `get`, `search`, `list`
 - `fields`, `version`, `help`
 - `attachment list`, `comments list`, `link list`
