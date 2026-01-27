@@ -5,9 +5,45 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.3.0] - 2026-01-27
 
-_No unreleased changes._
+### Added
+
+#### Secure Credential Storage
+- **Keyring integration**: Store API tokens securely in OS keyring
+  - macOS Keychain, Windows Credential Manager, Linux Secret Service
+  - Automatic backend selection based on platform and environment
+- **Encrypted file backend**: For CI/headless environments
+  - Password-protected via `JIRA_KEYRING_PASSWORD` environment variable
+- **`configure` command enhancement**: Now prompts for keyring storage during setup
+  - "Store API token securely in system keyring? [Y/n]"
+
+#### Command Allowlist System
+- **Read-only mode**: `JIRA_READONLY=1` restricts to non-destructive commands
+- **Custom allowlist**: `JIRA_COMMAND_ALLOWLIST=cmd1,cmd2` for fine-grained control
+- **`allowlist` command group** with subcommands:
+  - `status`: Show current allowlist configuration and allowed commands
+  - `commands`: List all commands by category (read/write)
+  - `check <cmd>`: Check if specific command is allowed (exit code 0/1)
+  - `enable`: Show platform-specific instructions for enabling restrictions
+
+#### New Files & Packages
+- `pkg/secrets/` - Secure credential storage system with keychain and file backends
+- `pkg/allowlist/` - Command restriction logic with read-only and explicit modes
+- `cmd/allowlist.go` - Allowlist CLI management commands
+- `AGENTS.md` - AI agent and contributor guidelines
+
+### Changed
+- `configure` command now offers keyring storage option with automatic backend selection
+- Root command validates commands against allowlist before execution
+- Config file supports new fields: `use_keyring`, `keyring_backend`
+
+### Technical Details
+- Comprehensive test suites for `pkg/secrets/` and `pkg/allowlist/`
+- 844 lines of allowlist tests covering edge cases (special chars, whitespace, partial matches)
+- 261 lines of secrets tests covering keychain and file backends
+- Platform-specific backend selection (darwin, windows, linux)
+- CI environment detection for automatic file backend selection
 
 ## [1.2.0] - 2026-01-26
 
@@ -272,6 +308,7 @@ For detailed usage instructions, see the [README](README.md).
 
 ---
 
+[1.3.0]: https://github.com/sanisideup/jira-cli/releases/tag/v1.3.0
 [1.2.0]: https://github.com/sanisideup/jira-cli/releases/tag/v1.2.0
 [1.1.0]: https://github.com/sanisideup/jira-cli/releases/tag/v1.1.0
 [1.0.0]: https://github.com/sanisideup/jira-cli/releases/tag/v1.0.0

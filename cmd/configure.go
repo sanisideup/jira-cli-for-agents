@@ -8,6 +8,7 @@ import (
 
 	"github.com/sanisideup/jira-cli/pkg/client"
 	"github.com/sanisideup/jira-cli/pkg/config"
+	"github.com/sanisideup/jira-cli/pkg/secrets"
 	"github.com/spf13/cobra"
 )
 
@@ -95,6 +96,36 @@ func runConfigure(cmd *cobra.Command, args []string) error {
 
 	fmt.Printf("✓ Successfully authenticated as: %s (%s)\n", user.DisplayName, user.EmailAddress)
 	fmt.Println()
+
+	// Prompt for keyring storage
+	fmt.Print("Store API token securely in system keyring? [Y/n]: ")
+	useKeyringAnswer, err := reader.ReadString('\n')
+	if err != nil {
+		return fmt.Errorf("failed to read keyring preference: %w", err)
+	}
+	useKeyringAnswer = strings.TrimSpace(strings.ToLower(useKeyringAnswer))
+
+	// Default to yes if empty or starts with 'y'
+	useKeyring := useKeyringAnswer == "" || useKeyringAnswer == "y" || useKeyringAnswer == "yes"
+
+	if useKeyring {
+		// Create secrets store with auto backend selection
+		store := secrets.NewStore(secrets.BackendAuto)
+		backend := store.GetBackend()
+
+		// Store token in keyring
+		if err := store.Store(email, &secrets.Credentials{APIToken: apiToken}); err != nil {
+			fmt.Printf("Warning: Failed to store token in keyring: %v\n", err)
+			fmt.Println("Falling back to storing token in config file.")
+			useKeyring = false
+		} else {
+			fmt.Printf("✓ API token stored securely in %s\n", backend)
+			// Clear API token from config since it's now in keyring
+			cfg.APIToken = ""
+			cfg.UseKeyring = true
+			cfg.KeyringBackend = string(backend)
+		}
+	}
 
 	// Save config
 	if err := cfg.Save(); err != nil {

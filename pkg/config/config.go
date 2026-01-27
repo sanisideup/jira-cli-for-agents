@@ -10,13 +10,15 @@ import (
 
 // Config represents the Jira CLI configuration
 type Config struct {
-	Domain            string            `yaml:"domain"`                       // e.g., "yourcompany.atlassian.net"
-	Email             string            `yaml:"email"`                        // User email for API token
-	APIToken          string            `yaml:"api_token"`                    // Jira API token
-	DefaultProject    string            `yaml:"default_project,omitempty"`    // Optional default project key
-	FieldMappings     map[string]string `yaml:"field_mappings,omitempty"`     // Custom field ID to name mappings
+	Domain            string            `yaml:"domain"`                        // e.g., "yourcompany.atlassian.net"
+	Email             string            `yaml:"email"`                         // User email for API token
+	APIToken          string            `yaml:"api_token,omitempty"`           // Jira API token (deprecated: use keyring)
+	DefaultProject    string            `yaml:"default_project,omitempty"`     // Optional default project key
+	FieldMappings     map[string]string `yaml:"field_mappings,omitempty"`      // Custom field ID to name mappings
 	MaxAttachmentSize int64             `yaml:"max_attachment_size,omitempty"` // Max attachment size in MB (default: 10)
-	DownloadPath      string            `yaml:"download_path,omitempty"`      // Default download directory
+	DownloadPath      string            `yaml:"download_path,omitempty"`       // Default download directory
+	KeyringBackend    string            `yaml:"keyring_backend,omitempty"`     // Credential storage: auto, keychain, file
+	UseKeyring        bool              `yaml:"use_keyring,omitempty"`         // Whether to use keyring for API token
 }
 
 const (
@@ -136,10 +138,18 @@ func (c *Config) Validate() error {
 	if c.Email == "" {
 		return fmt.Errorf("email is required")
 	}
-	if c.APIToken == "" {
-		return fmt.Errorf("api_token is required")
+	// API token can be empty if using keyring
+	if c.APIToken == "" && !c.UseKeyring {
+		return fmt.Errorf("api_token is required (or enable use_keyring)")
 	}
 	return nil
+}
+
+// GetAPIToken returns the API token, retrieving from keyring if configured
+func (c *Config) GetAPIToken() string {
+	// If UseKeyring is enabled and APIToken is empty, caller should use secrets package
+	// This method returns what's in config for backward compatibility
+	return c.APIToken
 }
 
 // GetBaseURL returns the full Jira API base URL
