@@ -14,6 +14,7 @@ A fast, scriptable CLI for Jira Cloud designed for AI-assisted workflows and dev
 - **Issue Management**: Complete CRUD operations for issues
 - **Comment Management**: Add, list, update, and delete comments on issues
 - **Attachment Support**: Upload, download, list, and delete file attachments
+- **Allowlist control**: Specify read only or write access of commands via CLI
 
 ## Installation
 
