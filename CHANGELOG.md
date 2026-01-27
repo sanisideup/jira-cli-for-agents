@@ -7,18 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.4.0] - 2026-01-27
 
-### Changed
+### ⚠️ Breaking Changes
 
 #### Project Rename
 - **Repository renamed**: `jira-cli` → `jira-cli-for-agents`
 - **Command shorthand**: `jcfa` is now the primary command (Jira CLI for Agents)
 - **Config directory**: Changed from `~/.jira-cli/` to `~/.jcfa/`
 - **Go module path**: Updated to `github.com/sanisideup/jira-cli-for-agents`
+- **Keyring service**: Changed from `jira-cli` to `jcfa`
+
+### Added
+
+#### Documentation
+- **"Why jcfa?" section** in README comparing jcfa to alternatives:
+  - Positions jcfa as automation-first (AI agents, CI/CD, scripts)
+  - Compares with [jira-cli](https://github.com/ankitpokhrel/jira-cli) (human-first TUI)
+  - Compares with [Atlassian CLI](https://developer.atlassian.com/cloud/acli/) (admin-first)
 
 ### Migration Notes
-- Existing users should move their config: `mv ~/.jira-cli ~/.jcfa`
-- Update any scripts using `jira-cli` to use `jcfa`
-- The binary is now built as `jcfa` instead of `jira-cli`
+
+```bash
+# Move config directory
+mv ~/.jira-cli ~/.jcfa
+
+# Update scripts to use new command
+# Before: jira-cli search "project=PROJ"
+# After:  jcfa search "project=PROJ"
+```
 
 ---
 
