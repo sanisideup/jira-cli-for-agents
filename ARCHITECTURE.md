@@ -1022,10 +1022,10 @@ root.PersistentPreRunE
 The `allowlist` command provides runtime introspection:
 
 ```bash
-jira-cli allowlist status    # View current configuration
-jira-cli allowlist commands  # List commands by category
-jira-cli allowlist check X   # Test if command X is allowed
-jira-cli allowlist enable    # Show enable instructions
+jcfa allowlist status    # View current configuration
+jcfa allowlist commands  # List commands by category
+jcfa allowlist check X   # Test if command X is allowed
+jcfa allowlist enable    # Show enable instructions
 ```
 
 ---
@@ -1121,16 +1121,16 @@ func TestCreateIssue(t *testing.T) {
 export JIRA_CONFIG=./test/fixtures/config.yaml
 
 # Test: Create issue
-output=$(./jira-cli create --template story --data test/fixtures/story.json)
+output=$(./jcfa create --template story --data test/fixtures/story.json)
 assert_contains "$output" "Created PROJ-"
 
 # Verify issue exists
 issue_key=$(echo "$output" | grep -oE 'PROJ-[0-9]+')
-verify_output=$(./jira-cli get "$issue_key")
+verify_output=$(./jcfa get "$issue_key")
 assert_contains "$verify_output" "User authentication"
 
 # Cleanup
-./jira-cli delete "$issue_key"
+./jcfa delete "$issue_key"
 ```
 
 ---

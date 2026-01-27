@@ -68,7 +68,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### Enhanced Link Command Group
 - **`link create`**: New explicit subcommand for creating links between issues
-  - Usage: `jira-cli link create PROJ-123 PROJ-456 --type Blocks`
+  - Usage: `jcfa link create PROJ-123 PROJ-456 --type Blocks`
 - **`link types`**: List all available link types in your Jira instance
   - Shows name, inward description, and outward description
   - Supports `--json` output
@@ -81,7 +81,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### Subtask Creation
 - **`--parent` flag** on `create` command for creating subtasks
-  - Usage: `jira-cli create --template task --data task.json --parent PROJ-123`
+  - Usage: `jcfa create --template task --data task.json --parent PROJ-123`
   - Validates parent issue exists
   - Prevents creating sub-subtasks (parent cannot be a subtask)
   - Works with `--dry-run` for validation
@@ -90,7 +90,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - **Link command restructured** as a command group with subcommands
-- **Backward compatibility maintained**: Legacy `jira-cli link PROJ-123 PROJ-456 --type Blocks` syntax continues to work
+- **Backward compatibility maintained**: Legacy `jcfa link PROJ-123 PROJ-456 --type Blocks` syntax continues to work
 
 ### Technical Details
 
@@ -299,7 +299,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Version 1.0.0 - Initial Release
 
-This is the first stable release of jira-cli, a command-line interface for Jira Cloud designed for developer productivity and AI-assisted workflows.
+This is the first stable release of jcfa, a command-line interface for Jira Cloud designed for developer productivity and AI-assisted workflows.
 
 **Highlights:**
 - Complete CRUD operations for Jira issues
@@ -315,10 +315,10 @@ This is the first stable release of jira-cli, a command-line interface for Jira 
 go install github.com/sanisideup/jira-cli-for-agents@latest
 
 # Configure
-jira-cli configure
+jcfa configure
 
 # Create issues
-jira-cli batch create issues.json
+jcfa batch create issues.json
 ```
 
 For detailed usage instructions, see the [README](README.md).

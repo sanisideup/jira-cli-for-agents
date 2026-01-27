@@ -24,7 +24,7 @@ By participating in this project, you agree to maintain a respectful and inclusi
 2. Clone your fork locally:
    ```bash
    git clone https://github.com/YOUR_USERNAME/jira-cli.git
-   cd jira-cli
+   cd jira-cli-for-agents
    ```
 3. Add the upstream remote:
    ```bash
@@ -57,7 +57,7 @@ By participating in this project, you agree to maintain a respectful and inclusi
 
 ```bash
 # Build the binary
-go build -o jira-cli main.go
+go build -o jcfa main.go
 
 # Build with version info
 go build -ldflags="-X 'github.com/sanisideup/jira-cli-for-agents/cmd.Version=dev'" -o jira-cli main.go
@@ -95,7 +95,7 @@ This project follows standard Go conventions:
 ### Code Organization
 
 ```
-jira-cli/
+jira-cli-for-agents/
 ├── cmd/           # CLI commands (Cobra)
 ├── pkg/
 │   ├── allowlist/ # Command restriction for sandboxed execution
@@ -223,7 +223,7 @@ When reporting bugs, please include:
 5. **Environment**:
    - OS and version
    - Go version (`go version`)
-   - jira-cli version (`jira-cli version`)
+   - jcfa version (`jcfa version`)
 6. **Logs/Output**: Relevant error messages or output (with sensitive data removed)
 
 ## Requesting Features

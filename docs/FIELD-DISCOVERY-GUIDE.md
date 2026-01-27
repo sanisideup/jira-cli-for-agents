@@ -8,22 +8,22 @@ Quick reference for using the field discovery and mapping features.
 
 ```bash
 # Human-readable table output
-jira-cli fields list
+jcfa fields list
 
 # JSON output for scripting
-jira-cli fields list --json
+jcfa fields list --json
 
 # Filter by project (returns all fields for now)
-jira-cli fields list --project MYPROJ
+jcfa fields list --project MYPROJ
 ```
 
 ### Create Field Alias
 
 ```bash
 # Map a custom field to a friendly alias
-jira-cli fields map story_points customfield_10016
-jira-cli fields map epic_link customfield_10014
-jira-cli fields map sprint customfield_10020
+jcfa fields map story_points customfield_10016
+jcfa fields map epic_link customfield_10014
+jcfa fields map sprint customfield_10020
 ```
 
 ## Understanding the Output
@@ -99,11 +99,11 @@ epic_link       customfield_10014
 
 ```bash
 # List all fields and search for the one you need
-jira-cli fields list | grep -i "story points"
+jcfa fields list | grep -i "story points"
 # Output: customfield_10016     Story Points      float
 
 # Or use JSON output and jq
-jira-cli fields list --json | jq '.[] | select(.name | contains("Story Points"))'
+jcfa fields list --json | jq '.[] | select(.name | contains("Story Points"))'
 ```
 
 ### Method 2: Jira UI
@@ -126,18 +126,18 @@ Here are common custom fields you might want to map:
 
 ```bash
 # Agile/Scrum fields
-jira-cli fields map story_points customfield_10016
-jira-cli fields map epic_link customfield_10014
-jira-cli fields map epic_name customfield_10011
-jira-cli fields map sprint customfield_10020
+jcfa fields map story_points customfield_10016
+jcfa fields map epic_link customfield_10014
+jcfa fields map epic_name customfield_10011
+jcfa fields map sprint customfield_10020
 
 # Time tracking (if custom)
-jira-cli fields map original_estimate customfield_10001
-jira-cli fields map remaining_estimate customfield_10002
+jcfa fields map original_estimate customfield_10001
+jcfa fields map remaining_estimate customfield_10002
 
 # Development (if you use these)
-jira-cli fields map development customfield_10100
-jira-cli fields map pull_request customfield_10101
+jcfa fields map development customfield_10100
+jcfa fields map pull_request customfield_10101
 ```
 
 ## Field Mapping Best Practices
@@ -187,7 +187,7 @@ You can manually edit this file to:
 - **Rename aliases:** Change the key (left side)
 - **Update field IDs:** Change the value (right side) if IDs change
 
-**Note:** Always validate with `jira-cli fields list` after manual edits.
+**Note:** Always validate with `jcfa fields list` after manual edits.
 
 ## Error Messages
 
@@ -197,7 +197,7 @@ You can manually edit this file to:
 Error: cannot map alias 'my_field': field with ID 'customfield_99999' not found
 ```
 
-**Solution:** Double-check the field ID with `jira-cli fields list`
+**Solution:** Double-check the field ID with `jcfa fields list`
 
 ### "Alias already mapped"
 
@@ -222,19 +222,19 @@ Once you've created field mappings, you'll be able to use them in:
 ### Issue Creation (Phase 4)
 ```bash
 # Instead of this:
-jira-cli create --field customfield_10016=5
+jcfa create --field customfield_10016=5
 
 # You can do this:
-jira-cli create --field story_points=5
+jcfa create --field story_points=5
 ```
 
 ### Issue Updates (Phase 5)
 ```bash
 # Instead of this:
-jira-cli update PROJ-123 --field customfield_10016=8
+jcfa update PROJ-123 --field customfield_10016=8
 
 # You can do this:
-jira-cli update PROJ-123 --field story_points=8
+jcfa update PROJ-123 --field story_points=8
 ```
 
 ### Templates (Phase 3)
@@ -251,7 +251,7 @@ fields:
 ### Export all custom fields to CSV
 
 ```bash
-jira-cli fields list --json | \
+jcfa fields list --json | \
   jq -r '.[] | select(.custom == true) | [.id, .name, .schema.type] | @csv' > custom_fields.csv
 ```
 
@@ -259,7 +259,7 @@ jira-cli fields list --json | \
 
 ```bash
 # Find all custom fields that are numbers
-jira-cli fields list --json | \
+jcfa fields list --json | \
   jq '.[] | select(.custom == true and .schema.type == "number")'
 ```
 
@@ -270,7 +270,7 @@ jira-cli fields list --json | \
 for field in "Story Points:customfield_10016" "Epic Link:customfield_10014" "Sprint:customfield_10020"; do
   IFS=':' read -r name id <<< "$field"
   alias=$(echo "$name" | tr '[:upper:]' '[:lower:]' | tr ' ' '_')
-  jira-cli fields map "$alias" "$id"
+  jcfa fields map "$alias" "$id"
 done
 ```
 
@@ -278,13 +278,13 @@ done
 
 ### "Config file not found"
 
-Run `jira-cli configure` first to set up your credentials.
+Run `jcfa configure` first to set up your credentials.
 
 ### Field IDs changed after Jira migration
 
 After migrating Jira instances, custom field IDs may change. You'll need to:
 
-1. List fields in the new instance: `jira-cli fields list`
+1. List fields in the new instance: `jcfa fields list`
 2. Find the new IDs for your custom fields
 3. Update your config manually or re-run the map commands
 
@@ -298,7 +298,7 @@ Some fields may not appear if:
 Try:
 ```bash
 # Search by name (case-insensitive)
-jira-cli fields list --json | jq '.[] | select(.name | test("search term"; "i"))'
+jcfa fields list --json | jq '.[] | select(.name | test("search term"; "i"))'
 ```
 
 ## Tips & Tricks
@@ -307,7 +307,7 @@ jira-cli fields list --json | jq '.[] | select(.name | test("search term"; "i"))
 
 ```bash
 # Add to your .bashrc / .zshrc
-alias jira-field='jira-cli fields list --json | jq -r ".[] | select(.name | contains(\"$1\")) | .id"'
+alias jira-field='jcfa fields list --json | jq -r ".[] | select(.name | contains(\"$1\")) | .id"'
 
 # Usage:
 jira-field "Story Points"

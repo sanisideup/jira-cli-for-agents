@@ -6,17 +6,17 @@ This directory contains example input files for testing the Jira CLI.
 
 ### Create a Story
 ```bash
-jira-cli create --template story --data examples/single-story.json
+jcfa create --template story --data examples/single-story.json
 ```
 
 ### Create an Epic
 ```bash
-jira-cli create --template epic --data examples/single-epic.json
+jcfa create --template epic --data examples/single-epic.json
 ```
 
 ### Dry-Run Validation
 ```bash
-jira-cli create --template story --data examples/single-story.json --dry-run
+jcfa create --template story --data examples/single-story.json --dry-run
 ```
 
 ## Batch Creation
@@ -29,17 +29,17 @@ The `batch-input.json` file demonstrates:
 - Automatic epic-story linking
 
 ```bash
-jira-cli batch create examples/batch-input.json
+jcfa batch create examples/batch-input.json
 ```
 
 ### Batch with Dry-Run
 ```bash
-jira-cli batch create examples/batch-input.json --dry-run
+jcfa batch create examples/batch-input.json --dry-run
 ```
 
 ### Batch with JSON Output
 ```bash
-jira-cli batch create examples/batch-input.json --json
+jcfa batch create examples/batch-input.json --json
 ```
 
 ## File Descriptions
@@ -76,5 +76,5 @@ Demonstrates:
 
 1. **Project Key**: Replace `"PROJ"` with your actual Jira project key
 2. **Custom Fields**: Use field mappings for custom fields like Story Points
-3. **Templates**: Ensure templates are initialized with `jira-cli template init`
+3. **Templates**: Ensure templates are initialized with `jcfa template init`
 4. **Validation**: Always use `--dry-run` first to validate your data

@@ -839,7 +839,7 @@ fi
 ### Project Structure
 
 ```
-jira-cli/
+jira-cli-for-agents/
 ├── cmd/                    # CLI commands (Cobra)
 │   ├── root.go            # Root command + global flags
 │   ├── configure.go       # Interactive setup

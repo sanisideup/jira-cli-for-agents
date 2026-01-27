@@ -4,7 +4,7 @@ This document provides guidelines for AI agents (Claude, GPT, Gemini, Copilot, e
 
 ## Project Overview
 
-`jira-cli` is a fast, scriptable CLI for Jira Cloud designed for AI-assisted workflows and developer productivity. It prioritizes:
+`jcfa` is a fast, scriptable CLI for Jira Cloud designed for AI-assisted workflows and developer productivity. It prioritizes:
 
 - **Batch operations** — Create dozens of issues from structured JSON
 - **Schema validation** — Catch errors before API submission
@@ -14,7 +14,7 @@ This document provides guidelines for AI agents (Claude, GPT, Gemini, Copilot, e
 ## Project Structure
 
 ```
-jira-cli/
+jira-cli-for-agents/
 ├── cmd/                # CLI commands (cobra-based)
 │   ├── root.go         # Root command, global flags, allowlist integration
 │   ├── create.go       # Issue creation
@@ -51,7 +51,7 @@ go test ./...
 go test ./pkg/config/...
 
 # Build with version info
-go build -ldflags "-X main.version=1.0.0" -o jira-cli
+go build -ldflags "-X main.version=1.0.0" -o jcfa
 ```
 
 ## Coding Conventions
@@ -242,7 +242,7 @@ Templates live in `templates/` and use Go's `text/template` syntax.
 
 **"config file not found"**
 ```bash
-jira-cli configure
+jcfa configure
 ```
 
 **"authentication failed"**

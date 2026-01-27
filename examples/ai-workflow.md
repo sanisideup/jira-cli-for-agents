@@ -1,12 +1,12 @@
-# Using jira-cli with AI Assistants
+# Using jcfa with AI Assistants
 
-This guide demonstrates how to use jira-cli with AI assistants (Claude, ChatGPT, Gemini, Copilot, etc.) for AI-assisted project management.
+This guide demonstrates how to use jcfa with AI assistants (Claude, ChatGPT, Gemini, Copilot, etc.) for AI-assisted project management.
 
 ## Workflow Overview
 
 1. **Discussion/Meeting** → AI assistant processes transcript
 2. **Generate Issues** → AI assistant creates JSON file
-3. **Batch Create** → jira-cli creates issues in Jira
+3. **Batch Create** → jcfa creates issues in Jira
 4. **Review & Refine** → Team reviews in Jira
 
 ## Example: Processing Meeting Notes
@@ -45,7 +45,7 @@ Decisions:
 
 **User:**
 ```
-Create a jira-cli batch input file from these meeting notes.
+Create a jcfa batch input file from these meeting notes.
 Use the epic template for the main initiative and story/bug templates
 for individual items.
 ```
@@ -107,10 +107,10 @@ for individual items.
 # (AI assistant might save it directly)
 
 # Validate with dry-run
-jira-cli batch create issues.json --dry-run
+jcfa batch create issues.json --dry-run
 
 # Create the issues
-jira-cli batch create issues.json
+jcfa batch create issues.json
 
 # Output:
 # Creating issues... [████████████████████] 100% (4/4)
@@ -126,7 +126,7 @@ jira-cli batch create issues.json
 
 ```bash
 # Get results in JSON format
-jira-cli batch create issues.json --json > results.json
+jcfa batch create issues.json --json > results.json
 
 # Extract issue keys
 cat results.json | jq -r '.created[].key'
@@ -146,19 +146,19 @@ cat results.json | jq '{
 
 ```bash
 # Search for issues to update
-jira-cli search "project = PLATFORM AND status = 'In Progress'" --json > in-progress.json
+jcfa search "project = PLATFORM AND status = 'In Progress'" --json > in-progress.json
 
 # Use AI assistant to analyze and suggest updates
 # Then apply updates:
-jira-cli update PLATFORM-2 --field story_points=8
-jira-cli comment PLATFORM-2 "Updated estimate based on technical investigation"
+jcfa update PLATFORM-2 --field story_points=8
+jcfa comment PLATFORM-2 "Updated estimate based on technical investigation"
 ```
 
 ### 2. Generate Reports
 
 ```bash
 # Get all issues for a sprint
-jira-cli search "project = PLATFORM AND sprint = 'Sprint 1'" --json > sprint-1.json
+jcfa search "project = PLATFORM AND sprint = 'Sprint 1'" --json > sprint-1.json
 
 # Ask AI assistant to analyze sprint-1.json and generate report
 # Example report: completion rate, blocked items, recommendations
@@ -168,8 +168,8 @@ jira-cli search "project = PLATFORM AND sprint = 'Sprint 1'" --json > sprint-1.j
 
 ```bash
 # After creating issues, link them
-jira-cli link PLATFORM-2 PLATFORM-3 --type "Relates"
-jira-cli link PLATFORM-4 PLATFORM-2 --type "Blocks"
+jcfa link PLATFORM-2 PLATFORM-3 --type "Relates"
+jcfa link PLATFORM-4 PLATFORM-2 --type "Blocks"
 ```
 
 ## Tips for Using with AI assistant
@@ -236,14 +236,14 @@ echo "Processing meeting notes..."
 
 # 3. Validate
 echo "Validating issues..."
-jira-cli batch create issues.json --dry-run
+jcfa batch create issues.json --dry-run
 
 # 4. Get user confirmation
 read -p "Create these issues? (y/n) " -n 1 -r
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]; then
   # 5. Create issues
-  jira-cli batch create issues.json --json > results.json
+  jcfa batch create issues.json --json > results.json
   
   # 6. Report results
   echo "Created $(cat results.json | jq -r '.success') issues"
@@ -258,7 +258,7 @@ fi
 # standup-report.sh
 
 # Get your recent activity
-jira-cli list --assignee currentUser() --limit 10 --json > my-issues.json
+jcfa list --assignee currentUser() --limit 10 --json > my-issues.json
 
 # Ask AI assistant to generate standup update
 # Input: my-issues.json
@@ -293,7 +293,7 @@ jira-cli list --assignee currentUser() --limit 10 --json > my-issues.json
 
 Then manually link:
 ```bash
-jira-cli link PROJ-2 PROJ-1 --type "Blocks"
+jcfa link PROJ-2 PROJ-1 --type "Blocks"
 ```
 
 ### Pattern 3: Charter (Planning Doc)
@@ -326,7 +326,7 @@ Please validate this JSON and fix any syntax errors
 
 **Solution:** Run field discovery first:
 ```bash
-jira-cli fields list --json > fields.json
+jcfa fields list --json > fields.json
 ```
 
 Then share fields.json with AI assistant for reference.
@@ -335,7 +335,7 @@ Then share fields.json with AI assistant for reference.
 
 **Solution:** Initialize templates:
 ```bash
-jira-cli template init
+jcfa template init
 ls ~/.jcfa/templates/
 ```
 
@@ -351,6 +351,6 @@ ls ~/.jcfa/templates/
 
 ## Resources
 
-- [jira-cli Documentation](../README.md)
+- [jcfa Documentation](../README.md)
 - [Template Reference](../templates/)
 - [JQL Query Guide](https://support.atlassian.com/jira-software-cloud/docs/use-advanced-search-with-jira-query-language-jql/)
