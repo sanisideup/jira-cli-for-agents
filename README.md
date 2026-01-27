@@ -30,12 +30,20 @@ A fast, scriptable CLI for Jira Cloud designed for AI-assisted workflows and dev
 git clone https://github.com/sanisideup/jira-cli-for-agents.git
 cd jira-cli-for-agents
 go build -o jcfa
+
+# Optional: Create symlink for backward compatibility
+ln -s jcfa jira-cli
 ```
 
 ### Install Globally
 
 ```bash
 go install github.com/sanisideup/jira-cli-for-agents@latest
+
+# The binary will be installed as jira-cli-for-agents
+# Create aliases for convenience:
+# alias jcfa='jira-cli-for-agents'
+# alias jira-cli='jira-cli-for-agents'
 ```
 
 ## Quick Start
