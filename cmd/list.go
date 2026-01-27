@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/sanisideup/jira-cli/pkg/jira"
+	"github.com/sanisideup/jira-cli-for-agents/pkg/jira"
 	"github.com/spf13/cobra"
 )
 
@@ -22,10 +22,10 @@ var listCmd = &cobra.Command{
 By default, lists recent issues for the current user.
 
 Examples:
-  jira-cli list
-  jira-cli list --project PROJ
-  jira-cli list --assignee john@example.com --status "In Progress"
-  jira-cli list --limit 10 --json`,
+  jcfa list
+  jcfa list --project PROJ
+  jcfa list --assignee john@example.com --status "In Progress"
+  jcfa list --limit 10 --json`,
 	RunE: runList,
 }
 

@@ -6,9 +6,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/sanisideup/jira-cli/pkg/client"
-	"github.com/sanisideup/jira-cli/pkg/config"
-	"github.com/sanisideup/jira-cli/pkg/secrets"
+	"github.com/sanisideup/jira-cli-for-agents/pkg/client"
+	"github.com/sanisideup/jira-cli-for-agents/pkg/config"
+	"github.com/sanisideup/jira-cli-for-agents/pkg/secrets"
 	"github.com/spf13/cobra"
 )
 
@@ -135,7 +135,7 @@ func runConfigure(cmd *cobra.Command, args []string) error {
 	configPath, _ := config.GetConfigPath()
 	fmt.Printf("✓ Configuration saved to: %s\n", configPath)
 	fmt.Println()
-	fmt.Println("You're all set! Try running 'jira-cli --help' to see available commands.")
+	fmt.Println("You're all set! Try running 'jcfa --help' to see available commands.")
 
 	return nil
 }

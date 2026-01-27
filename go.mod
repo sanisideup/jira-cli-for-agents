@@ -1,4 +1,4 @@
-module github.com/sanisideup/jira-cli
+module github.com/sanisideup/jira-cli-for-agents
 
 go 1.22
 

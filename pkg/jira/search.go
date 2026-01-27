@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/sanisideup/jira-cli/pkg/client"
-	"github.com/sanisideup/jira-cli/pkg/models"
+	"github.com/sanisideup/jira-cli-for-agents/pkg/client"
+	"github.com/sanisideup/jira-cli-for-agents/pkg/models"
 )
 
 // SearchService handles issue search operations

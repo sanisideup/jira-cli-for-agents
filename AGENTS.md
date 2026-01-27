@@ -42,7 +42,7 @@ jira-cli/
 
 ```bash
 # Build
-go build -o jira-cli
+go build -o jira-cli-for-agents
 
 # Run tests
 go test ./...

@@ -8,9 +8,9 @@ import (
 	"strings"
 	"text/tabwriter"
 
-	"github.com/sanisideup/jira-cli/pkg/config"
-	"github.com/sanisideup/jira-cli/pkg/jira"
-	"github.com/sanisideup/jira-cli/pkg/models"
+	"github.com/sanisideup/jira-cli-for-agents/pkg/config"
+	"github.com/sanisideup/jira-cli-for-agents/pkg/jira"
+	"github.com/sanisideup/jira-cli-for-agents/pkg/models"
 	"github.com/spf13/cobra"
 )
 
@@ -34,13 +34,13 @@ var fieldsListCmd = &cobra.Command{
 	Long: `List all available Jira fields including standard and custom fields.
 Output can be filtered by project and formatted as JSON or human-readable table.`,
 	Example: `  # List all fields
-  jira-cli fields list
+  jcfa fields list
 
   # List fields for a specific project
-  jira-cli fields list --project PROJ
+  jcfa fields list --project PROJ
 
   # Output as JSON
-  jira-cli fields list --json`,
+  jcfa fields list --json`,
 	RunE: runFieldsList,
 }
 
@@ -51,12 +51,12 @@ var fieldsMapCmd = &cobra.Command{
 	Long: `Map a custom field ID to a human-readable alias.
 This makes it easier to reference custom fields in other commands.
 
-The field ID must exist in your Jira instance. Use 'jira-cli fields list' to find field IDs.`,
+The field ID must exist in your Jira instance. Use 'jcfa fields list' to find field IDs.`,
 	Example: `  # Map story_points to customfield_10016
-  jira-cli fields map story_points customfield_10016
+  jcfa fields map story_points customfield_10016
 
   # Map epic_link to customfield_10014
-  jira-cli fields map epic_link customfield_10014`,
+  jcfa fields map epic_link customfield_10014`,
 	Args: cobra.ExactArgs(2),
 	RunE: runFieldsMap,
 }

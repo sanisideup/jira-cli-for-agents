@@ -6,8 +6,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/sanisideup/jira-cli/pkg/client"
-	"github.com/sanisideup/jira-cli/pkg/models"
+	"github.com/sanisideup/jira-cli-for-agents/pkg/client"
+	"github.com/sanisideup/jira-cli-for-agents/pkg/models"
 	"github.com/schollz/progressbar/v3"
 )
 

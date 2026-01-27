@@ -3,8 +3,8 @@ package jira
 import (
 	"fmt"
 
-	"github.com/sanisideup/jira-cli/pkg/client"
-	"github.com/sanisideup/jira-cli/pkg/models"
+	"github.com/sanisideup/jira-cli-for-agents/pkg/client"
+	"github.com/sanisideup/jira-cli-for-agents/pkg/models"
 )
 
 // IssueService handles issue-related operations

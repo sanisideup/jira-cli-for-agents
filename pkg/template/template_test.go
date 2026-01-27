@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/sanisideup/jira-cli/pkg/config"
+	"github.com/sanisideup/jira-cli-for-agents/pkg/config"
 )
 
 func TestLoadTemplate(t *testing.T) {

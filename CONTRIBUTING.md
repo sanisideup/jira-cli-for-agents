@@ -28,7 +28,7 @@ By participating in this project, you agree to maintain a respectful and inclusi
    ```
 3. Add the upstream remote:
    ```bash
-   git remote add upstream https://github.com/sanisideup/jira-cli.git
+   git remote add upstream https://github.com/sanisideup/jira-cli-for-agents.git
    ```
 4. Create a branch for your changes:
    ```bash
@@ -60,7 +60,7 @@ By participating in this project, you agree to maintain a respectful and inclusi
 go build -o jira-cli main.go
 
 # Build with version info
-go build -ldflags="-X 'github.com/sanisideup/jira-cli/cmd.Version=dev'" -o jira-cli main.go
+go build -ldflags="-X 'github.com/sanisideup/jira-cli-for-agents/cmd.Version=dev'" -o jira-cli main.go
 ```
 
 ### Running Tests

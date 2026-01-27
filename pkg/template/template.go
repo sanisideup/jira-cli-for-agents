@@ -10,7 +10,7 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/sanisideup/jira-cli/pkg/config"
+	"github.com/sanisideup/jira-cli-for-agents/pkg/config"
 	"gopkg.in/yaml.v3"
 )
 

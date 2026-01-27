@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"path/filepath"
 
-	"github.com/sanisideup/jira-cli/pkg/config"
-	"github.com/sanisideup/jira-cli/pkg/template"
+	"github.com/sanisideup/jira-cli-for-agents/pkg/config"
+	"github.com/sanisideup/jira-cli-for-agents/pkg/template"
 	"github.com/spf13/cobra"
 )
 
@@ -23,7 +23,7 @@ var templateCmd = &cobra.Command{
 var templateInitCmd = &cobra.Command{
 	Use:   "init",
 	Short: "Initialize templates by copying defaults to user directory",
-	Long: `Copies default issue templates (epic, story, bug, charter) to ~/.jira-cli/templates/
+	Long: `Copies default issue templates (epic, story, bug, charter) to ~/.jcfa/templates/
 for customization. Existing templates will not be overwritten.`,
 	RunE: runTemplateInit,
 }
@@ -93,7 +93,7 @@ func runTemplateList(cmd *cobra.Command, args []string) error {
 	}
 
 	if len(templates) == 0 {
-		fmt.Println("No templates found. Run 'jira-cli template init' to initialize default templates.")
+		fmt.Println("No templates found. Run 'jcfa template init' to initialize default templates.")
 		return nil
 	}
 

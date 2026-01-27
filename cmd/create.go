@@ -8,8 +8,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/sanisideup/jira-cli/pkg/jira"
-	"github.com/sanisideup/jira-cli/pkg/template"
+	"github.com/sanisideup/jira-cli-for-agents/pkg/jira"
+	"github.com/sanisideup/jira-cli-for-agents/pkg/template"
 	"github.com/spf13/cobra"
 )
 
@@ -34,22 +34,22 @@ Subtask Creation:
 
 Examples:
   # Create from template and data file
-  jira-cli create --template story --data story.json
+  jcfa create --template story --data story.json
 
   # Create with dry-run to validate
-  jira-cli create --template story --data story.json --dry-run
+  jcfa create --template story --data story.json --dry-run
 
   # Create with JSON output
-  jira-cli create --template story --data story.json --json
+  jcfa create --template story --data story.json --json
 
   # Read data from stdin
-  cat story.json | jira-cli create --template story --data -
+  cat story.json | jcfa create --template story --data -
 
   # Create a subtask under a parent issue
-  jira-cli create --template subtask --data task.json --parent PROJ-123
+  jcfa create --template subtask --data task.json --parent PROJ-123
 
   # Create subtask interactively
-  jira-cli create --template subtask --interactive --parent PROJ-123
+  jcfa create --template subtask --interactive --parent PROJ-123
 `,
 	RunE: runCreate,
 }
@@ -73,7 +73,7 @@ func runCreate(cmd *cobra.Command, args []string) error {
 	}
 
 	// Initialize services
-	templateService := template.NewService(filepath.Join(os.Getenv("HOME"), ".jira-cli", "templates"))
+	templateService := template.NewService(filepath.Join(os.Getenv("HOME"), ".jcfa", "templates"))
 	issueService := jira.NewIssueService(jiraClient)
 
 	// Load template

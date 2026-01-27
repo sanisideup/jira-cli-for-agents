@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/sanisideup/jira-cli/pkg/jira"
+	"github.com/sanisideup/jira-cli-for-agents/pkg/jira"
 	"github.com/spf13/cobra"
 )
 
@@ -23,9 +23,9 @@ Field names can be either field IDs (like "customfield_10016") or aliases
 configured in your field mappings.
 
 Examples:
-  jira-cli update PROJ-123 --field summary="New title"
-  jira-cli update PROJ-123 --field story_points=8
-  jira-cli update PROJ-123 --field summary="Updated" --field description="New desc"`,
+  jcfa update PROJ-123 --field summary="New title"
+  jcfa update PROJ-123 --field story_points=8
+  jcfa update PROJ-123 --field summary="Updated" --field description="New desc"`,
 	Args: cobra.ExactArgs(1),
 	RunE: runUpdate,
 }

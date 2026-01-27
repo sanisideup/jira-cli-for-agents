@@ -54,7 +54,7 @@ cat issues.json | jira batch create --dry-run
 
 ### 4. **Extensibility**
 - Field type handlers can be added without changing core logic
-- Template system supports custom templates in `~/.jira-cli/templates/`
+- Template system supports custom templates in `~/.jcfa/templates/`
 - Plugin-style architecture for future extensions (webhooks, automation)
 
 ### 5. **Observability**
@@ -140,7 +140,7 @@ cat issues.json | jira batch create --dry-run
 3. CLI validates credentials:
    GET /rest/api/3/myself
    Authorization: Basic base64(email:token)
-4. On success (200), save to ~/.jira-cli/config.yaml (chmod 0600)
+4. On success (200), save to ~/.jcfa/config.yaml (chmod 0600)
 5. All subsequent requests use saved credentials
 ```
 
@@ -397,7 +397,7 @@ func (s *HierarchyService) LinkToEpic(storyKey, epicKey string) error {
 
 **Caching**: Method detection result is cached in config to avoid repeated API calls:
 ```yaml
-# ~/.jira-cli/config.yaml
+# ~/.jcfa/config.yaml
 hierarchy_method: "parent"  # or "epic_link" or "issue_link"
 field_mappings:
   epic_link: "customfield_10014"  # Only if using epic_link method
@@ -509,7 +509,7 @@ func GetHandler(schema Schema) FieldTypeHandler {
 - Easier to validate structure
 - Direct mapping to Jira API JSON format
 
-**Example Template** (`~/.jira-cli/templates/story.json`):
+**Example Template** (`~/.jcfa/templates/story.json`):
 ```json
 {
   "type": "Story",
@@ -837,7 +837,7 @@ httpClient := &http.Client{
 ## Security Considerations
 
 ### 1. API Token Storage
-- **Storage**: `~/.jira-cli/config.yaml` with `chmod 0600` (owner-only)
+- **Storage**: `~/.jcfa/config.yaml` with `chmod 0600` (owner-only)
 - **Never**: Log tokens, include in error messages, commit to git
 - **Environment override**: Support `JIRA_API_TOKEN` env var for CI/CD
 

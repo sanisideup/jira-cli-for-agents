@@ -166,7 +166,7 @@ jira-cli fields map pull_request customfield_10101
 
 ## Configuration File
 
-Mappings are stored in `~/.jira-cli/config.yaml`:
+Mappings are stored in `~/.jcfa/config.yaml`:
 
 ```yaml
 domain: yourcompany.atlassian.net
@@ -205,7 +205,7 @@ Error: cannot map alias 'my_field': field with ID 'customfield_99999' not found
 Error: alias 'story_points' already mapped to 'customfield_10016'. Remove the existing mapping first
 ```
 
-**Solution:** Edit `~/.jira-cli/config.yaml` to remove or rename the existing mapping
+**Solution:** Edit `~/.jcfa/config.yaml` to remove or rename the existing mapping
 
 ### "Invalid alias"
 
@@ -318,17 +318,17 @@ jira-field "Story Points"
 
 ```bash
 # Backup config before changes
-cp ~/.jira-cli/config.yaml ~/.jira-cli/config.yaml.backup
+cp ~/.jcfa/config.yaml ~/.jcfa/config.yaml.backup
 
 # Restore if needed
-cp ~/.jira-cli/config.yaml.backup ~/.jira-cli/config.yaml
+cp ~/.jcfa/config.yaml.backup ~/.jcfa/config.yaml
 ```
 
 ### Share mappings with team
 
 ```bash
 # Export just the field mappings
-jq '.field_mappings' ~/.jira-cli/config.yaml > team-field-mappings.json
+jq '.field_mappings' ~/.jcfa/config.yaml > team-field-mappings.json
 
 # Team members can copy these to their config
 ```

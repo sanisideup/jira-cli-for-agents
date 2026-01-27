@@ -1,6 +1,6 @@
 package main
 
-import "github.com/sanisideup/jira-cli/cmd"
+import "github.com/sanisideup/jira-cli-for-agents/cmd"
 
 func main() {
 	cmd.Execute()

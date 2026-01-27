@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0] - 2026-01-27
+
+### Changed
+
+#### Project Rename
+- **Repository renamed**: `jira-cli` → `jira-cli-for-agents`
+- **Command shorthand**: `jcfa` is now the primary command (Jira CLI for Agents)
+- **Config directory**: Changed from `~/.jira-cli/` to `~/.jcfa/`
+- **Go module path**: Updated to `github.com/sanisideup/jira-cli-for-agents`
+
+### Migration Notes
+- Existing users should move their config: `mv ~/.jira-cli ~/.jcfa`
+- Update any scripts using `jira-cli` to use `jcfa`
+- The binary is now built as `jcfa` instead of `jira-cli`
+
+---
+
 ## [1.3.0] - 2026-01-27
 
 ### Added
@@ -295,7 +312,7 @@ This is the first stable release of jira-cli, a command-line interface for Jira 
 **Getting Started:**
 ```bash
 # Install
-go install github.com/sanisideup/jira-cli@latest
+go install github.com/sanisideup/jira-cli-for-agents@latest
 
 # Configure
 jira-cli configure
@@ -308,7 +325,7 @@ For detailed usage instructions, see the [README](README.md).
 
 ---
 
-[1.3.0]: https://github.com/sanisideup/jira-cli/releases/tag/v1.3.0
-[1.2.0]: https://github.com/sanisideup/jira-cli/releases/tag/v1.2.0
-[1.1.0]: https://github.com/sanisideup/jira-cli/releases/tag/v1.1.0
-[1.0.0]: https://github.com/sanisideup/jira-cli/releases/tag/v1.0.0
+[1.3.0]: https://github.com/sanisideup/jira-cli-for-agents/releases/tag/v1.3.0
+[1.2.0]: https://github.com/sanisideup/jira-cli-for-agents/releases/tag/v1.2.0
+[1.1.0]: https://github.com/sanisideup/jira-cli-for-agents/releases/tag/v1.1.0
+[1.0.0]: https://github.com/sanisideup/jira-cli-for-agents/releases/tag/v1.0.0

@@ -7,9 +7,9 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/sanisideup/jira-cli/pkg/jira"
-	"github.com/sanisideup/jira-cli/pkg/models"
-	"github.com/sanisideup/jira-cli/pkg/template"
+	"github.com/sanisideup/jira-cli-for-agents/pkg/jira"
+	"github.com/sanisideup/jira-cli-for-agents/pkg/models"
+	"github.com/sanisideup/jira-cli-for-agents/pkg/template"
 	"github.com/schollz/progressbar/v3"
 	"github.com/spf13/cobra"
 )
@@ -90,16 +90,16 @@ Use @<id> to reference other issues in the batch (e.g., "@epic1" links to the ep
 
 Examples:
   # Create issues from a file
-  jira-cli batch create issues.json
+  jcfa batch create issues.json
 
   # Dry run to validate
-  jira-cli batch create issues.json --dry-run
+  jcfa batch create issues.json --dry-run
 
   # Disable progress bar
-  jira-cli batch create issues.json --no-progress
+  jcfa batch create issues.json --no-progress
 
   # JSON output
-  jira-cli batch create issues.json --json
+  jcfa batch create issues.json --json
 `,
 	Args: cobra.ExactArgs(1),
 	RunE: runBatchCreate,
@@ -127,7 +127,7 @@ func runBatchCreate(cmd *cobra.Command, args []string) error {
 	}
 
 	// Initialize services
-	templateService := template.NewService(filepath.Join(os.Getenv("HOME"), ".jira-cli", "templates"))
+	templateService := template.NewService(filepath.Join(os.Getenv("HOME"), ".jcfa", "templates"))
 	issueService := jira.NewIssueService(jiraClient)
 	linkService := jira.NewLinkService(jiraClient)
 

@@ -336,7 +336,7 @@ Then share fields.json with AI assistant for reference.
 **Solution:** Initialize templates:
 ```bash
 jira-cli template init
-ls ~/.jira-cli/templates/
+ls ~/.jcfa/templates/
 ```
 
 ## Best Practices

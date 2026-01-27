@@ -5,8 +5,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/sanisideup/jira-cli/pkg/client"
-	"github.com/sanisideup/jira-cli/pkg/models"
+	"github.com/sanisideup/jira-cli-for-agents/pkg/client"
+	"github.com/sanisideup/jira-cli-for-agents/pkg/models"
 )
 
 // MetadataService handles fetching and caching issue creation metadata

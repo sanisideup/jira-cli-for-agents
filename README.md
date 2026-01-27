@@ -1,4 +1,4 @@
-# jira-cli
+# jira-cli-for-agents
 
 A fast, scriptable CLI for Jira Cloud designed for AI-assisted workflows and developer productivity.
 
@@ -27,15 +27,15 @@ A fast, scriptable CLI for Jira Cloud designed for AI-assisted workflows and dev
 ### From Source
 
 ```bash
-git clone https://github.com/sanisideup/jira-cli.git
-cd jira-cli
-go build -o jira-cli
+git clone https://github.com/sanisideup/jira-cli-for-agents.git
+cd jira-cli-for-agents
+go build -o jcfa
 ```
 
 ### Install Globally
 
 ```bash
-go install github.com/sanisideup/jira-cli@latest
+go install github.com/sanisideup/jira-cli-for-agents@latest
 ```
 
 ## Quick Start
@@ -43,7 +43,7 @@ go install github.com/sanisideup/jira-cli@latest
 ### 1. Configure Credentials
 
 ```bash
-jira-cli configure
+jcfa configure
 ```
 
 You'll be prompted for:
@@ -56,26 +56,26 @@ You'll be prompted for:
 
 ```bash
 # List all fields
-jira-cli fields list
+jcfa fields list
 
 # List fields for a specific project
-jira-cli fields list --project PROJ
+jcfa fields list --project PROJ
 ```
 
 ### 3. Create Field Aliases
 
 ```bash
-jira-cli fields map story_points customfield_10016
-jira-cli fields map epic_link customfield_10014
+jcfa fields map story_points customfield_10016
+jcfa fields map epic_link customfield_10014
 ```
 
 ### 4. Initialize Templates
 
 ```bash
-jira-cli template init
+jcfa template init
 ```
 
-Templates are saved to `~/.jira-cli/templates/` for customization.
+Templates are saved to `~/.jcfa/templates/` for customization.
 
 ## Commands
 
@@ -85,30 +85,30 @@ Templates are saved to `~/.jira-cli/templates/` for customization.
 
 ```bash
 # Default output (description + attachments)
-jira-cli get PROJ-123
+jcfa get PROJ-123
 
 # Show linked issues
-jira-cli get PROJ-123 --links
-jira-cli get PROJ-123 -l
+jcfa get PROJ-123 --links
+jcfa get PROJ-123 -l
 
 # Show subtasks
-jira-cli get PROJ-123 --subtasks
-jira-cli get PROJ-123 -s
+jcfa get PROJ-123 --subtasks
+jcfa get PROJ-123 -s
 
 # Show comments
-jira-cli get PROJ-123 --comments
-jira-cli get PROJ-123 -c
+jcfa get PROJ-123 --comments
+jcfa get PROJ-123 -c
 
 # Combine multiple options
-jira-cli get PROJ-123 --links --comments
-jira-cli get PROJ-123 -lc
+jcfa get PROJ-123 --links --comments
+jcfa get PROJ-123 -lc
 
 # Show everything (links + subtasks + comments)
-jira-cli get PROJ-123 --full
-jira-cli get PROJ-123 -f
+jcfa get PROJ-123 --full
+jcfa get PROJ-123 -f
 
 # JSON output
-jira-cli get PROJ-123 --json
+jcfa get PROJ-123 --json
 ```
 
 Output:
@@ -168,39 +168,39 @@ Looks good! Make sure to add refresh token support.
 
 ```bash
 # Search with JQL
-jira-cli search "project = PROJ AND status = Open"
+jcfa search "project = PROJ AND status = Open"
 
 # Limit results
-jira-cli search "assignee = currentUser() ORDER BY updated DESC" --limit 20
+jcfa search "assignee = currentUser() ORDER BY updated DESC" --limit 20
 
 # JSON output for scripting
-jira-cli search "type = Bug" --json
+jcfa search "type = Bug" --json
 ```
 
 #### List Issues
 
 ```bash
 # List your recent issues
-jira-cli list
+jcfa list
 
 # Filter by project
-jira-cli list --project PROJ
+jcfa list --project PROJ
 
 # Filter by assignee and status
-jira-cli list --assignee john@example.com --status "In Progress"
+jcfa list --assignee john@example.com --status "In Progress"
 
 # Limit results
-jira-cli list --limit 10
+jcfa list --limit 10
 ```
 
 #### Create Issue
 
 ```bash
 # Create from template
-jira-cli create --template story --data story.json
+jcfa create --template story --data story.json
 
 # Dry-run mode (validation only)
-jira-cli create --template epic --data epic.json --dry-run
+jcfa create --template epic --data epic.json --dry-run
 ```
 
 Example `story.json`:
@@ -218,30 +218,30 @@ Example `story.json`:
 
 ```bash
 # Update single field
-jira-cli update PROJ-123 --field summary="New title"
+jcfa update PROJ-123 --field summary="New title"
 
 # Update multiple fields
-jira-cli update PROJ-123 \
+jcfa update PROJ-123 \
   --field summary="Updated title" \
   --field story_points=8
 
 # Update with field aliases
-jira-cli update PROJ-123 --field status="In Progress"
+jcfa update PROJ-123 --field status="In Progress"
 ```
 
 #### Add Comment
 
 ```bash
-jira-cli comment PROJ-123 "This is a comment"
-jira-cli comment PROJ-123 "Updated the implementation" --json
+jcfa comment PROJ-123 "This is a comment"
+jcfa comment PROJ-123 "Updated the implementation" --json
 ```
 
 #### Transition Issue
 
 ```bash
 # Move to different status
-jira-cli transition PROJ-123 "In Progress"
-jira-cli transition PROJ-123 "Done"
+jcfa transition PROJ-123 "In Progress"
+jcfa transition PROJ-123 "Done"
 ```
 
 The CLI will automatically find the correct transition based on the status name (case-insensitive).
@@ -250,21 +250,21 @@ The CLI will automatically find the correct transition based on the status name 
 
 ```bash
 # Create a link (new syntax)
-jira-cli link create PROJ-123 PROJ-124 --type Blocks
+jcfa link create PROJ-123 PROJ-124 --type Blocks
 
 # Create a link (legacy syntax - backward compatible)
-jira-cli link PROJ-123 PROJ-124 --type Blocks
+jcfa link PROJ-123 PROJ-124 --type Blocks
 
 # List available link types
-jira-cli link types
-jira-cli link types --json
+jcfa link types
+jcfa link types --json
 
 # List all links on an issue
-jira-cli link list PROJ-123
-jira-cli link list PROJ-123 --json
+jcfa link list PROJ-123
+jcfa link list PROJ-123 --json
 
 # Delete a link by ID (requires --confirm for safety)
-jira-cli link delete 10234 --confirm
+jcfa link delete 10234 --confirm
 ```
 
 Output of `link types`:
@@ -299,14 +299,14 @@ Common link types:
 
 ```bash
 # Create a subtask under a parent issue
-jira-cli create --template task --data task.json --parent PROJ-123
-jira-cli create -t task -d task.json -p PROJ-123
+jcfa create --template task --data task.json --parent PROJ-123
+jcfa create -t task -d task.json -p PROJ-123
 
 # Dry-run to validate subtask creation
-jira-cli create --template task --data task.json --parent PROJ-123 --dry-run
+jcfa create --template task --data task.json --parent PROJ-123 --dry-run
 
 # Interactive subtask creation
-jira-cli create --template task --interactive --parent PROJ-123
+jcfa create --template task --interactive --parent PROJ-123
 ```
 
 Notes:
@@ -320,46 +320,46 @@ Notes:
 
 ```bash
 # Add a comment (legacy syntax - backward compatible)
-jira-cli comment PROJ-123 "This is a comment"
+jcfa comment PROJ-123 "This is a comment"
 
 # Add a comment (new syntax with subcommands)
-jira-cli comments add PROJ-123 "This is a comment"
+jcfa comments add PROJ-123 "This is a comment"
 
 # Add comment with JSON output
-jira-cli comments add PROJ-123 "Implementation complete" --json
+jcfa comments add PROJ-123 "Implementation complete" --json
 ```
 
 #### List Comments
 
 ```bash
 # List all comments on an issue
-jira-cli comments list PROJ-123
+jcfa comments list PROJ-123
 
 # List with limit
-jira-cli comments list PROJ-123 --limit 10
+jcfa comments list PROJ-123 --limit 10
 
 # List in reverse order (newest first)
-jira-cli comments list PROJ-123 --order -created
+jcfa comments list PROJ-123 --order -created
 
 # JSON output
-jira-cli comments list PROJ-123 --json
+jcfa comments list PROJ-123 --json
 ```
 
 #### Get Comment
 
 ```bash
 # Get a specific comment by ID
-jira-cli comments get PROJ-123 10001
+jcfa comments get PROJ-123 10001
 
 # JSON output
-jira-cli comments get PROJ-123 10001 --json
+jcfa comments get PROJ-123 10001 --json
 ```
 
 #### Update Comment
 
 ```bash
 # Update an existing comment
-jira-cli comments update PROJ-123 10001 "Updated comment text"
+jcfa comments update PROJ-123 10001 "Updated comment text"
 
 # Note: You can only update comments you created or if you have admin permissions
 ```
@@ -368,7 +368,7 @@ jira-cli comments update PROJ-123 10001 "Updated comment text"
 
 ```bash
 # Delete a comment (requires confirmation for safety)
-jira-cli comments delete PROJ-123 10001 --confirm
+jcfa comments delete PROJ-123 10001 --confirm
 
 # Note: You can only delete comments you created or if you have admin permissions
 ```
@@ -379,10 +379,10 @@ jira-cli comments delete PROJ-123 10001 --confirm
 
 ```bash
 # List all attachments on an issue
-jira-cli attachment list PROJ-123
+jcfa attachment list PROJ-123
 
 # JSON output
-jira-cli attachment list PROJ-123 --json
+jcfa attachment list PROJ-123 --json
 ```
 
 Output:
@@ -400,13 +400,13 @@ ID       Filename           Size    Author      Date
 
 ```bash
 # Upload a single file
-jira-cli attachment upload PROJ-123 design.pdf
+jcfa attachment upload PROJ-123 design.pdf
 
 # Upload multiple files
-jira-cli attachment upload PROJ-123 file1.pdf file2.png file3.docx
+jcfa attachment upload PROJ-123 file1.pdf file2.png file3.docx
 
 # Upload without progress bar (for automation)
-jira-cli attachment upload PROJ-123 large-file.zip --no-progress
+jcfa attachment upload PROJ-123 large-file.zip --no-progress
 
 # Files larger than 1MB automatically show progress bar
 ```
@@ -415,26 +415,26 @@ jira-cli attachment upload PROJ-123 large-file.zip --no-progress
 
 ```bash
 # Download by filename
-jira-cli attachment download PROJ-123 design.pdf
+jcfa attachment download PROJ-123 design.pdf
 
 # Download by ID
-jira-cli attachment download PROJ-123 10001
+jcfa attachment download PROJ-123 10001
 
 # Download to specific directory
-jira-cli attachment download PROJ-123 design.pdf --output ./downloads/
+jcfa attachment download PROJ-123 design.pdf --output ./downloads/
 
 # Download with custom filename
-jira-cli attachment download PROJ-123 design.pdf --output custom-name.pdf
+jcfa attachment download PROJ-123 design.pdf --output custom-name.pdf
 
 # Download without progress bar
-jira-cli attachment download PROJ-123 large-file.zip --no-progress
+jcfa attachment download PROJ-123 large-file.zip --no-progress
 ```
 
 #### Delete Attachment
 
 ```bash
 # Delete an attachment by ID (requires confirmation)
-jira-cli attachment delete 10001 --confirm
+jcfa attachment delete 10001 --confirm
 
 # Note: You need appropriate permissions to delete attachments
 ```
@@ -445,13 +445,13 @@ jira-cli attachment delete 10001 --confirm
 
 ```bash
 # Create multiple issues
-jira-cli batch create issues.json
+jcfa batch create issues.json
 
 # Dry-run mode (validation only)
-jira-cli batch create issues.json --dry-run
+jcfa batch create issues.json --dry-run
 
 # Disable progress bar
-jira-cli batch create issues.json --no-progress
+jcfa batch create issues.json --no-progress
 ```
 
 Example `issues.json`:
@@ -485,21 +485,21 @@ Example `issues.json`:
 
 ```bash
 # List all fields
-jira-cli fields list
+jcfa fields list
 
 # List fields for specific project
-jira-cli fields list --project PROJ
+jcfa fields list --project PROJ
 
 # JSON output
-jira-cli fields list --json
+jcfa fields list --json
 ```
 
 #### Map Field Alias
 
 ```bash
-jira-cli fields map story_points customfield_10016
-jira-cli fields map epic_name customfield_10011
-jira-cli fields map epic_link customfield_10014
+jcfa fields map story_points customfield_10016
+jcfa fields map epic_name customfield_10011
+jcfa fields map epic_link customfield_10014
 ```
 
 ### Configuration
@@ -508,14 +508,14 @@ jira-cli fields map epic_link customfield_10014
 
 ```bash
 # Interactive configuration
-jira-cli configure
+jcfa configure
 ```
 
 #### Version
 
 ```bash
-jira-cli version
-jira-cli version --json
+jcfa version
+jcfa version --json
 ```
 
 ### Allowlist Management
@@ -526,8 +526,8 @@ Manage command restrictions for sandboxed or AI-assisted execution.
 
 ```bash
 # Show current allowlist status
-jira-cli allowlist status
-jira-cli allowlist status --json
+jcfa allowlist status
+jcfa allowlist status --json
 ```
 
 Output:
@@ -556,8 +556,8 @@ Note: 'help', 'version', '--help', '-h' are always allowed.
 
 ```bash
 # List all commands categorized as read/write
-jira-cli allowlist commands
-jira-cli allowlist commands --json
+jcfa allowlist commands
+jcfa allowlist commands --json
 ```
 
 Output:
@@ -592,12 +592,12 @@ Total: 27 commands
 
 ```bash
 # Check if a command is allowed (exit code 0=allowed, 1=blocked)
-jira-cli allowlist check get
-jira-cli allowlist check create
+jcfa allowlist check get
+jcfa allowlist check create
 
 # Useful in scripts
-if jira-cli allowlist check create; then
-  jira-cli create --template story --data story.json
+if jcfa allowlist check create; then
+  jcfa create --template story --data story.json
 else
   echo "Create command is blocked"
 fi
@@ -607,7 +607,7 @@ fi
 
 ```bash
 # Show how to enable allowlist restrictions
-jira-cli allowlist enable
+jcfa allowlist enable
 ```
 
 Displays platform-specific instructions for enabling read-only mode or custom allowlists.
@@ -616,14 +616,14 @@ Displays platform-specific instructions for enabling read-only mode or custom al
 
 All commands support these global flags:
 
-- `--config <path>`: Override config file location (default: `~/.jira-cli/config.yaml`)
+- `--config <path>`: Override config file location (default: `~/.jcfa/config.yaml`)
 - `--json`: Output in JSON format for scripting
 - `--verbose` or `-v`: Enable verbose logging
 - `--no-color`: Disable colored output
 
 ## Configuration File
 
-Location: `~/.jira-cli/config.yaml`
+Location: `~/.jcfa/config.yaml`
 
 ```yaml
 domain: yourcompany.atlassian.net
@@ -646,7 +646,7 @@ Templates use Go's `text/template` syntax with field placeholders.
 
 ### Epic Template
 
-File: `~/.jira-cli/templates/epic.yaml`
+File: `~/.jcfa/templates/epic.yaml`
 
 ```yaml
 type: Epic
@@ -660,7 +660,7 @@ fields:
 
 ### Story Template
 
-File: `~/.jira-cli/templates/story.yaml`
+File: `~/.jcfa/templates/story.yaml`
 
 ```yaml
 type: Story
@@ -676,7 +676,7 @@ fields:
 
 ### Bug Template
 
-File: `~/.jira-cli/templates/bug.yaml`
+File: `~/.jcfa/templates/bug.yaml`
 
 ```yaml
 type: Bug
@@ -696,7 +696,7 @@ This CLI is designed to work seamlessly with AI assistants (Claude, ChatGPT, Gem
 
 1. **Parse meeting transcript** with your AI assistant
 2. **Generate issues.json** from discussion points
-3. **Batch create** issues: `jira-cli batch create issues.json`
+3. **Batch create** issues: `jcfa batch create issues.json`
 4. **Review** created issues in Jira
 
 See [examples/ai-workflow.md](examples/ai-workflow.md) for detailed examples.
@@ -705,10 +705,10 @@ See [examples/ai-workflow.md](examples/ai-workflow.md) for detailed examples.
 
 ### Secure Credential Storage
 
-By default, API tokens are stored in `~/.jira-cli/config.yaml` with restricted permissions (0600). For enhanced security, the `configure` command offers to store your API token in the OS keyring:
+By default, API tokens are stored in `~/.jcfa/config.yaml` with restricted permissions (0600). For enhanced security, the `configure` command offers to store your API token in the OS keyring:
 
 ```bash
-jira-cli configure
+jcfa configure
 # ...
 # Store API token securely in system keyring? [Y/n]: y
 # ✓ API token stored securely in keychain
@@ -756,7 +756,7 @@ export JIRA_COMMAND_ALLOWLIST="get,search,list,fields"
 - `attachment upload/delete`
 - `configure`, `template`
 
-Use `jira-cli allowlist status` to view current restrictions or `jira-cli allowlist commands` to see all commands by category.
+Use `jcfa allowlist status` to view current restrictions or `jcfa allowlist commands` to see all commands by category.
 
 ## Exit Codes
 
@@ -771,7 +771,7 @@ The CLI uses specific exit codes for different error types:
 This allows for proper error handling in scripts:
 
 ```bash
-if jira-cli create --template story --data story.json; then
+if jcfa create --template story --data story.json; then
   echo "Issue created successfully"
 else
   exit_code=$?
@@ -779,7 +779,7 @@ else
     1) echo "Authentication failed - check your credentials" ;;
     2) echo "Validation error - check your data" ;;
     3) echo "API error - Jira may be unavailable" ;;
-    4) echo "Configuration error - run 'jira-cli configure'" ;;
+    4) echo "Configuration error - run 'jcfa configure'" ;;
   esac
 fi
 ```
@@ -790,22 +790,22 @@ fi
 
 ```bash
 # Create epic
-jira-cli create --template epic --data epic.json
+jcfa create --template epic --data epic.json
 
 # Create stories linked to epic
-jira-cli batch create stories.json
+jcfa batch create stories.json
 ```
 
 ### Search and Update
 
 ```bash
 # Find all open bugs
-jira-cli search "project = PROJ AND type = Bug AND status = Open" --json > bugs.json
+jcfa search "project = PROJ AND type = Bug AND status = Open" --json > bugs.json
 
 # Update a bug
-jira-cli update PROJ-456 --field priority="High"
-jira-cli comment PROJ-456 "Investigating the root cause"
-jira-cli transition PROJ-456 "In Progress"
+jcfa update PROJ-456 --field priority="High"
+jcfa comment PROJ-456 "Investigating the root cause"
+jcfa transition PROJ-456 "In Progress"
 ```
 
 ### Automated Workflow
@@ -814,7 +814,7 @@ jira-cli transition PROJ-456 "In Progress"
 #!/bin/bash
 
 # Create issues from JSON
-jira-cli batch create issues.json --json > results.json
+jcfa batch create issues.json --json > results.json
 
 # Check exit code
 if [ $? -eq 0 ]; then
@@ -881,10 +881,10 @@ go test ./pkg/jira -v
 
 ```bash
 # Standard build
-go build -o jira-cli
+go build -o jcfa
 
 # With version info
-go build -ldflags="-X 'github.com/sanisideup/jira-cli/cmd.Version=1.0.0'" -o jira-cli
+go build -ldflags="-X 'github.com/sanisideup/jira-cli-for-agents/cmd.Version=1.0.0'" -o jira-cli
 ```
 
 ## Architecture
@@ -935,9 +935,9 @@ Built on [Jira Cloud REST API v3](https://developer.atlassian.com/cloud/jira/pla
 
 ### Custom Field Not Found
 
-- Run `jira-cli fields list` to discover field IDs
+- Run `jcfa fields list` to discover field IDs
 - Field IDs vary by Jira instance
-- Create field mapping: `jira-cli fields map <alias> <field-id>`
+- Create field mapping: `jcfa fields map <alias> <field-id>`
 
 ### Rate Limiting
 
@@ -967,7 +967,7 @@ MIT License - see LICENSE file for details
 
 - [Jira Cloud REST API Documentation](https://developer.atlassian.com/cloud/jira/platform/rest/v3/)
 - [Create API Token](https://id.atlassian.com/manage/api-tokens)
-- [GitHub Issues](https://github.com/sanisideup/jira-cli/issues)
+- [GitHub Issues](https://github.com/sanisideup/jira-cli-for-agents/issues)
 
 ## Acknowledgments
 
