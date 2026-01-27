@@ -4,18 +4,16 @@ A fast, scriptable CLI for Jira Cloud designed for AI-assisted workflows and dev
 
 ## Features
 
-- ✅ **Batch Operations**: Create multiple issues from JSON with progress tracking
-- ✅ **Custom Fields**: Full support for custom fields with user-defined aliases
-- ✅ **Template System**: Reusable templates for common issue types (Epic, Story, Bug, etc.)
-- ✅ **Schema Validation**: Validate issue data before creation to catch errors early
-- ✅ **Auto-Linking**: Automatically link stories to epics during batch creation
-- ✅ **JQL Search**: Powerful search capabilities using Jira Query Language
-- ✅ **JSON Output**: Machine-readable output for scripting and automation
-- ✅ **Issue Management**: Complete CRUD operations for issues
-- ✅ **Comment Management**: Add, list, update, and delete comments on issues
-- ✅ **Attachment Support**: Upload, download, list, and delete file attachments
-- ✅ **Secure Credential Storage**: OS keyring integration (macOS Keychain, Windows Credential Manager, Linux Secret Service)
-- ✅ **Agent Safety**: Command allowlist for sandboxed/AI-assisted execution
+- **Batch Operations**: Create multiple issues from JSON with progress tracking
+- **Custom Fields**: Full support for custom fields with user-defined aliases
+- **Template System**: Reusable templates for common issue types (Epic, Story, Bug, etc.)
+- **Schema Validation**: Validate issue data before creation to catch errors early
+- **Auto-Linking**: Automatically link stories to epics during batch creation
+- **JQL Search**: Powerful search capabilities using Jira Query Language
+- **JSON Output**: Machine-readable output for scripting and automation
+- **Issue Management**: Complete CRUD operations for issues
+- **Comment Management**: Add, list, update, and delete comments on issues
+- **Attachment Support**: Upload, download, list, and delete file attachments
 
 ## Installation
 
@@ -949,42 +947,6 @@ The CLI automatically handles rate limits (HTTP 429) with exponential backoff (3
 - Ensure template fields match your Jira instance
 - Use `--dry-run` to validate before creating
 - Check field mappings in config
-
-## Roadmap
-
-### ✅ Phase 1: Scaffolding + Auth
-- [x] Project structure
-- [x] Configuration management
-- [x] API token authentication
-- [x] Credential validation
-
-### ✅ Phase 2: Field Discovery
-- [x] Field discovery
-- [x] Field mapping
-- [x] Custom field support
-
-### ✅ Phase 3: Schema Validation & Templates
-- [x] Metadata service
-- [x] Schema validation
-- [x] Template system
-
-### ✅ Phase 4: Issue Creation
-- [x] Single issue creation
-- [x] Bulk issue creation
-- [x] Epic linking
-- [x] Progress tracking
-
-### ✅ Phase 5: Read Operations & Final Polish
-- [x] Get issue
-- [x] Search issues (JQL)
-- [x] List issues
-- [x] Update issue
-- [x] Add comments
-- [x] Transition issues
-- [x] Link issues
-- [x] Global flags
-- [x] Exit codes
-- [x] Documentation
 
 ## Contributing
 
