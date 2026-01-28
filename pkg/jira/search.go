@@ -41,19 +41,9 @@ func (s *SearchService) Search(jql string, maxResults int, fields []string) (*mo
 		maxResults = 50
 	}
 
-	// If no specific fields requested, get common fields for display
+	// If no specific fields requested, get all fields (including custom fields)
 	if fields == nil || len(fields) == 0 {
-		fields = []string{
-			"summary",
-			"status",
-			"issuetype",
-			"assignee",
-			"priority",
-			"created",
-			"updated",
-			"description",
-			"labels",
-		}
+		fields = []string{"*all"}
 	}
 
 	req := SearchRequest{

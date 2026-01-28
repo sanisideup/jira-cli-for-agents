@@ -10,7 +10,8 @@ import (
 )
 
 var (
-	searchLimit int
+	searchLimit  int
+	searchFields []string
 )
 
 var searchCmd = &cobra.Command{
@@ -21,7 +22,8 @@ var searchCmd = &cobra.Command{
 Examples:
   jcfa search "project = PROJ AND status = Open"
   jcfa search "assignee = currentUser() ORDER BY updated DESC" --limit 20
-  jcfa search "project = PROJ AND type = Story" --json`,
+  jcfa search "project = PROJ AND type = Story" --json
+  jcfa search "project = PROJ" --fields summary,status,customfield_10014`,
 	Args: cobra.ExactArgs(1),
 	RunE: runSearch,
 }
@@ -29,6 +31,7 @@ Examples:
 func init() {
 	rootCmd.AddCommand(searchCmd)
 	searchCmd.Flags().IntVar(&searchLimit, "limit", 50, "maximum number of results to return")
+	searchCmd.Flags().StringSliceVar(&searchFields, "fields", nil, "comma-separated list of fields to return (e.g., summary,status,customfield_10014)")
 }
 
 func runSearch(cmd *cobra.Command, args []string) error {
@@ -37,8 +40,8 @@ func runSearch(cmd *cobra.Command, args []string) error {
 	// Create search service
 	searchService := jira.NewSearchService(jiraClient)
 
-	// Execute search
-	result, err := searchService.Search(jql, searchLimit, nil)
+	// Execute search (pass fields if specified, otherwise nil for all fields)
+	result, err := searchService.Search(jql, searchLimit, searchFields)
 	if err != nil {
 		return fmt.Errorf("search failed: %w", err)
 	}
