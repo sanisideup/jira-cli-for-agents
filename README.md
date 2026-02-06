@@ -729,6 +729,73 @@ fields:
   labels: {{ .Labels | toJson }}
 ```
 
+### Project-Local Templates
+
+JCFA supports project-local templates in `.jcfa/templates/`. This allows teams to version-control templates alongside project code.
+
+#### Template Resolution Order
+
+When loading a template, JCFA searches in this order:
+
+1. **Explicit**: `--templates-dir` flag (highest priority)
+2. **Local**: `./.jcfa/templates/` (project directory)
+3. **Config**: `templates_dir` in `~/.jcfa/config.yaml`
+4. **User**: `~/.jcfa/templates/`
+5. **Built-in**: Embedded defaults (lowest priority)
+
+#### Setup Project-Local Templates
+
+```bash
+# Initialize templates in current project
+jcfa template init --local
+
+# Or manually create
+mkdir -p .jcfa/templates
+
+# List templates showing sources
+jcfa template list
+# Output:
+#   - hcp-epic (local)
+#   - epic (user)
+#   - story (builtin)
+
+# Show which file a template resolves to
+jcfa template show epic
+# Output includes:
+#   Path: ./.jcfa/templates/epic.yaml
+#   Source: local
+```
+
+#### Example: Project-Specific Epic Template
+
+```bash
+# Create custom template for your project
+cat > .jcfa/templates/hcp-epic.yaml << 'EOF'
+type: Epic
+fields:
+  project:
+    key: "{{ .Project }}"
+  summary: "{{ .Summary }}"
+  parent:
+    key: "{{ .Parent }}"
+  customfield_10015: "{{ .StartDate }}"
+  duedate: "{{ .DueDate }}"
+EOF
+
+# Use it
+echo '{"Summary": "My Epic", "Project": "CAM", "Parent": "REV-123"}' | \
+  jcfa create --template hcp-epic --data -
+```
+
+#### Version Control
+
+Commit your project templates to git:
+
+```bash
+git add .jcfa/templates/
+git commit -m "Add project-specific JCFA templates"
+```
+
 ## Usage with AI Assistants
 
 This CLI is designed to work seamlessly with AI assistants (Claude, Codex, OpenCode, etc.) for AI-assisted project management.
