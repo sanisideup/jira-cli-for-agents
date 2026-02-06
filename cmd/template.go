@@ -20,11 +20,18 @@ var templateCmd = &cobra.Command{
 	},
 }
 
+var (
+	initLocal bool // --local flag for template init
+)
+
 var templateInitCmd = &cobra.Command{
 	Use:   "init",
-	Short: "Initialize templates by copying defaults to user directory",
-	Long: `Copies default issue templates (epic, story, bug, charter) to ~/.jcfa/templates/
-for customization. Existing templates will not be overwritten.`,
+	Short: "Initialize templates by copying defaults to user or project directory",
+	Long: `Copies default issue templates (epic, story, bug, charter) to a templates directory
+for customization. Existing templates will not be overwritten.
+
+By default, templates are copied to ~/.jcfa/templates/ (user directory).
+Use --local to initialize templates in ./.jcfa/templates/ (project directory).`,
 	RunE: runTemplateInit,
 }
 
@@ -48,24 +55,40 @@ func init() {
 	templateCmd.AddCommand(templateInitCmd)
 	templateCmd.AddCommand(templateListCmd)
 	templateCmd.AddCommand(templateShowCmd)
+
+	// Add --local flag to template init
+	templateInitCmd.Flags().BoolVar(&initLocal, "local", false, "initialize templates in .jcfa/templates/ (project-local)")
 }
 
 func runTemplateInit(cmd *cobra.Command, args []string) error {
-	// Get template directory
-	configDir, err := config.GetConfigDir()
-	if err != nil {
-		return err
+	var templateDir string
+
+	if initLocal {
+		// Initialize in project-local directory
+		templateDir = ".jcfa/templates"
+	} else {
+		// Initialize in user directory (default)
+		configDir, err := config.GetConfigDir()
+		if err != nil {
+			return err
+		}
+		templateDir = filepath.Join(configDir, "templates")
 	}
 
-	templateDir := filepath.Join(configDir, "templates")
 	svc := template.NewService(templateDir)
 
-	// Initialize templates
-	if err := svc.InitTemplates(); err != nil {
+	// Initialize templates to the target directory
+	if err := svc.InitTemplatesToDir(templateDir); err != nil {
 		return fmt.Errorf("failed to initialize templates: %w", err)
 	}
 
-	fmt.Printf("✓ Templates initialized in: %s\n", templateDir)
+	if initLocal {
+		fmt.Printf("✓ Templates initialized in project directory: %s\n", templateDir)
+		fmt.Println("\nThis directory can be committed to version control.")
+	} else {
+		fmt.Printf("✓ Templates initialized in: %s\n", templateDir)
+	}
+
 	fmt.Println("\nAvailable templates:")
 	fmt.Println("  - epic.yaml")
 	fmt.Println("  - story.yaml")
@@ -77,17 +100,18 @@ func runTemplateInit(cmd *cobra.Command, args []string) error {
 }
 
 func runTemplateList(cmd *cobra.Command, args []string) error {
-	// Get template directory
-	configDir, err := config.GetConfigDir()
-	if err != nil {
-		return err
+	// Create resolver with config templates dir
+	var configTemplatesDir string
+	loadedCfg := config.LoadOrDefault()
+	if loadedCfg != nil {
+		configTemplatesDir = loadedCfg.TemplatesDir
 	}
 
-	templateDir := filepath.Join(configDir, "templates")
-	svc := template.NewService(templateDir)
+	resolver := template.NewResolver(configTemplatesDir, "")
+	svc := template.NewServiceWithResolver(resolver)
 
-	// List templates
-	templates, err := svc.ListTemplates()
+	// List templates with source info
+	templates, err := svc.ListTemplatesWithInfo()
 	if err != nil {
 		return fmt.Errorf("failed to list templates: %w", err)
 	}
@@ -107,8 +131,8 @@ func runTemplateList(cmd *cobra.Command, args []string) error {
 	}
 
 	fmt.Println("Available templates:")
-	for _, name := range templates {
-		fmt.Printf("  - %s\n", name)
+	for _, tmpl := range templates {
+		fmt.Printf("  - %s (%s)\n", tmpl.Name, tmpl.Source)
 	}
 
 	return nil
@@ -117,15 +141,19 @@ func runTemplateList(cmd *cobra.Command, args []string) error {
 func runTemplateShow(cmd *cobra.Command, args []string) error {
 	templateName := args[0]
 
-	// Get template directory
-	configDir, err := config.GetConfigDir()
-	if err != nil {
-		return err
+	// Create resolver with config templates dir
+	var configTemplatesDir string
+	loadedCfg := config.LoadOrDefault()
+	if loadedCfg != nil {
+		configTemplatesDir = loadedCfg.TemplatesDir
 	}
 
-	templateDir := filepath.Join(configDir, "templates")
-	svc := template.NewService(templateDir)
+	resolver := template.NewResolver(configTemplatesDir, "")
+	svc := template.NewServiceWithResolver(resolver)
 
+	// Resolve template path first to show source
+	path, source, resolveErr := resolver.ResolveWithBuiltin(templateName, svc.GetBuiltinNames)
+	
 	// Load template
 	tmpl, err := svc.LoadTemplate(templateName)
 	if err != nil {
@@ -133,7 +161,15 @@ func runTemplateShow(cmd *cobra.Command, args []string) error {
 	}
 
 	if jsonOutput {
-		data, err := json.MarshalIndent(tmpl, "", "  ")
+		// Include path and source in JSON output
+		output := map[string]interface{}{
+			"name":   templateName,
+			"path":   path,
+			"source": source,
+			"type":   tmpl.Type,
+			"fields": tmpl.Fields,
+		}
+		data, err := json.MarshalIndent(output, "", "  ")
 		if err != nil {
 			return err
 		}
@@ -142,6 +178,14 @@ func runTemplateShow(cmd *cobra.Command, args []string) error {
 	}
 
 	fmt.Printf("Template: %s\n", templateName)
+	if resolveErr == nil {
+		if source == "builtin" {
+			fmt.Printf("Path: (builtin)\n")
+		} else {
+			fmt.Printf("Path: %s\n", path)
+		}
+		fmt.Printf("Source: %s\n", source)
+	}
 	fmt.Printf("Issue Type: %s\n", tmpl.Type)
 	fmt.Println("\nFields:")
 

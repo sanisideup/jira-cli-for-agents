@@ -20,6 +20,7 @@ var defaultTemplates embed.FS
 // Service handles template loading, rendering, and management
 type Service struct {
 	templateDir string
+	resolver    *TemplateResolver
 }
 
 // Template represents a Jira issue template
@@ -28,16 +29,29 @@ type Template struct {
 	Fields map[string]interface{} `yaml:"fields"` // Field values with {{ }} placeholders
 }
 
-// NewService creates a new template service
+// NewService creates a new template service (legacy, uses single directory)
 func NewService(templateDir string) *Service {
 	return &Service{
 		templateDir: templateDir,
 	}
 }
 
+// NewServiceWithResolver creates a new template service with a custom resolver
+func NewServiceWithResolver(resolver *TemplateResolver) *Service {
+	return &Service{
+		templateDir: resolver.UserDir, // fallback for compatibility
+		resolver:    resolver,
+	}
+}
+
 // LoadTemplate loads a template by name from the user's template directory or embedded defaults
 func (s *Service) LoadTemplate(name string) (*Template, error) {
-	// Try user template directory first
+	// Use resolver if available
+	if s.resolver != nil {
+		return s.loadTemplateWithResolver(name)
+	}
+
+	// Legacy behavior: try user template directory first
 	userTemplatePath := filepath.Join(s.templateDir, name+".yaml")
 	if data, err := os.ReadFile(userTemplatePath); err == nil {
 		return s.parseTemplate(data)
@@ -51,6 +65,56 @@ func (s *Service) LoadTemplate(name string) (*Template, error) {
 	}
 
 	return s.parseTemplate(data)
+}
+
+// loadTemplateWithResolver loads a template using the resolver's fallback chain
+func (s *Service) loadTemplateWithResolver(name string) (*Template, error) {
+	// Try to resolve from filesystem paths
+	path, source, err := s.resolver.ResolveWithBuiltin(name, s.builtinExists)
+	
+	// If found in builtin, load from embedded FS
+	if err == nil && source == "builtin" {
+		defaultPath := fmt.Sprintf("defaults/%s.yaml", name)
+		data, err := defaultTemplates.ReadFile(defaultPath)
+		if err != nil {
+			return nil, fmt.Errorf("failed to read builtin template '%s': %w", name, err)
+		}
+		return s.parseTemplate(data)
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	// Load from resolved path
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read template '%s' from %s: %w", name, path, err)
+	}
+
+	return s.parseTemplate(data)
+}
+
+// builtinExists checks if a builtin template exists
+func (s *Service) builtinExists(name string) bool {
+	defaultPath := fmt.Sprintf("defaults/%s.yaml", name)
+	_, err := defaultTemplates.ReadFile(defaultPath)
+	return err == nil
+}
+
+// GetBuiltinNames returns the names of all builtin templates
+func (s *Service) GetBuiltinNames() []string {
+	var names []string
+	entries, err := defaultTemplates.ReadDir("defaults")
+	if err != nil {
+		return names
+	}
+	for _, entry := range entries {
+		if !entry.IsDir() && strings.HasSuffix(entry.Name(), ".yaml") {
+			names = append(names, strings.TrimSuffix(entry.Name(), ".yaml"))
+		}
+	}
+	return names
 }
 
 // parseTemplate parses YAML template data into a Template struct
@@ -215,10 +279,50 @@ func (s *Service) ListTemplates() ([]string, error) {
 	return result, nil
 }
 
+// ListTemplatesWithInfo returns templates with source information using the resolver
+func (s *Service) ListTemplatesWithInfo() ([]TemplateInfo, error) {
+	if s.resolver == nil {
+		// Fallback: convert simple list to TemplateInfo
+		names, err := s.ListTemplates()
+		if err != nil {
+			return nil, err
+		}
+		var templates []TemplateInfo
+		for _, name := range names {
+			templates = append(templates, TemplateInfo{
+				Name:   name,
+				Path:   filepath.Join(s.templateDir, name+".yaml"),
+				Source: "user",
+			})
+		}
+		return templates, nil
+	}
+
+	return s.resolver.ListWithBuiltin(s.GetBuiltinNames)
+}
+
+// GetResolver returns the template resolver (may be nil for legacy services)
+func (s *Service) GetResolver() *TemplateResolver {
+	return s.resolver
+}
+
 // InitTemplates copies default templates to the user's template directory
 func (s *Service) InitTemplates() error {
+	return s.InitTemplatesToDir(s.templateDir)
+}
+
+// InitTemplatesLocal copies default templates to the project-local templates directory
+func (s *Service) InitTemplatesLocal() error {
+	if s.resolver == nil {
+		return s.InitTemplatesToDir(".jcfa/templates")
+	}
+	return s.InitTemplatesToDir(s.resolver.LocalDir)
+}
+
+// InitTemplatesToDir copies default templates to the specified directory
+func (s *Service) InitTemplatesToDir(targetDir string) error {
 	// Create template directory if it doesn't exist
-	if err := os.MkdirAll(s.templateDir, 0755); err != nil {
+	if err := os.MkdirAll(targetDir, 0755); err != nil {
 		return fmt.Errorf("failed to create template directory: %w", err)
 	}
 
@@ -240,15 +344,15 @@ func (s *Service) InitTemplates() error {
 			return fmt.Errorf("failed to read default template %s: %w", entry.Name(), err)
 		}
 
-		// Write to user template directory
-		userPath := filepath.Join(s.templateDir, entry.Name())
+		// Write to target directory
+		targetPath := filepath.Join(targetDir, entry.Name())
 
 		// Don't overwrite existing templates
-		if _, err := os.Stat(userPath); err == nil {
+		if _, err := os.Stat(targetPath); err == nil {
 			continue
 		}
 
-		if err := os.WriteFile(userPath, data, 0644); err != nil {
+		if err := os.WriteFile(targetPath, data, 0644); err != nil {
 			return fmt.Errorf("failed to write template %s: %w", entry.Name(), err)
 		}
 	}

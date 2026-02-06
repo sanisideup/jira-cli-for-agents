@@ -19,6 +19,7 @@ type Config struct {
 	DownloadPath      string            `yaml:"download_path,omitempty"`       // Default download directory
 	KeyringBackend    string            `yaml:"keyring_backend,omitempty"`     // Credential storage: auto, keychain, file
 	UseKeyring        bool              `yaml:"use_keyring,omitempty"`         // Whether to use keyring for API token
+	TemplatesDir      string            `yaml:"templates_dir,omitempty"`       // Custom templates directory path
 }
 
 const (

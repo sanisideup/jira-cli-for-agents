@@ -19,6 +19,7 @@ var (
 	dryRun       bool
 	interactive  bool
 	parentIssue  string // Parent issue key for creating subtasks
+	templatesDir string // Custom templates directory
 )
 
 // createCmd represents the create command
@@ -62,6 +63,7 @@ func init() {
 	createCmd.Flags().BoolVar(&dryRun, "dry-run", false, "validate without creating the issue")
 	createCmd.Flags().BoolVarP(&interactive, "interactive", "i", false, "interactive mode (prompts for data)")
 	createCmd.Flags().StringVarP(&parentIssue, "parent", "p", "", "parent issue key for creating subtasks (e.g., PROJ-123)")
+	createCmd.Flags().StringVar(&templatesDir, "templates-dir", "", "custom templates directory (overrides default search paths)")
 
 	createCmd.MarkFlagRequired("template")
 }
@@ -72,8 +74,13 @@ func runCreate(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("either --data or --interactive must be specified")
 	}
 
-	// Initialize services
-	templateService := template.NewService(filepath.Join(os.Getenv("HOME"), ".jcfa", "templates"))
+	// Initialize services with resolver
+	var configTemplatesDir string
+	if cfg != nil {
+		configTemplatesDir = cfg.TemplatesDir
+	}
+	resolver := template.NewResolver(configTemplatesDir, templatesDir)
+	templateService := template.NewServiceWithResolver(resolver)
 	issueService := jira.NewIssueService(jiraClient)
 
 	// Load template
