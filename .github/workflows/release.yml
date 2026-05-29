@@ -1,0 +1,142 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Test
+        run: go test ./...
+
+      - name: Vet
+        run: go vet ./...
+
+  build:
+    name: Build release assets
+    runs-on: ubuntu-latest
+    needs: test
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - goos: linux
+            goarch: amd64
+            archive: tar.gz
+          - goos: linux
+            goarch: arm64
+            archive: tar.gz
+          - goos: darwin
+            goarch: amd64
+            archive: tar.gz
+          - goos: darwin
+            goarch: arm64
+            archive: tar.gz
+          - goos: windows
+            goarch: amd64
+            archive: zip
+          - goos: windows
+            goarch: arm64
+            archive: zip
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Build
+        env:
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+          CGO_ENABLED: "0"
+        run: |
+          set -euo pipefail
+
+          version="${GITHUB_REF_NAME#v}"
+          if [ "$GITHUB_REF_TYPE" != "tag" ]; then
+            version="dev-${GITHUB_SHA::7}"
+          fi
+
+          build_date="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+          git_commit="${GITHUB_SHA}"
+          binary="jcfa"
+          if [ "${GOOS}" = "windows" ]; then
+            binary="jcfa.exe"
+          fi
+
+          mkdir -p "dist/jcfa_${version}_${GOOS}_${GOARCH}"
+          go build \
+            -trimpath \
+            -ldflags="-s -w -X 'github.com/sanisideup/jira-cli-for-agents/cmd.Version=${version}' -X 'github.com/sanisideup/jira-cli-for-agents/cmd.BuildDate=${build_date}' -X 'github.com/sanisideup/jira-cli-for-agents/cmd.GitCommit=${git_commit}'" \
+            -o "dist/jcfa_${version}_${GOOS}_${GOARCH}/${binary}" \
+            .
+
+          cp README.md LICENSE CHANGELOG.md "dist/jcfa_${version}_${GOOS}_${GOARCH}/"
+
+      - name: Package
+        working-directory: dist
+        run: |
+          set -euo pipefail
+
+          package="jcfa_${GITHUB_REF_NAME#v}_${{ matrix.goos }}_${{ matrix.goarch }}"
+          if [ "$GITHUB_REF_TYPE" != "tag" ]; then
+            package="jcfa_dev-${GITHUB_SHA::7}_${{ matrix.goos }}_${{ matrix.goarch }}"
+          fi
+
+          if [ "${{ matrix.archive }}" = "zip" ]; then
+            zip -r "${package}.zip" "${package}"
+          else
+            tar -czf "${package}.tar.gz" "${package}"
+          fi
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: jcfa-${{ matrix.goos }}-${{ matrix.goarch }}
+          path: |
+            dist/*.tar.gz
+            dist/*.zip
+          if-no-files-found: error
+
+  publish:
+    name: Publish release
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref_type == 'tag'
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v8
+        with:
+          path: dist
+          merge-multiple: true
+
+      - name: Generate checksums
+        working-directory: dist
+        run: sha256sum *.tar.gz *.zip > checksums.txt
+
+      - name: Publish release assets
+        uses: softprops/action-gh-release@v3
+        with:
+          files: dist/*
